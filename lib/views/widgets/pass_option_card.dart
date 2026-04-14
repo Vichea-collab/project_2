@@ -28,6 +28,7 @@ class PassOptionCard extends StatelessWidget {
     return SectionCard(
       padding: EdgeInsets.all(compact ? 18 : 20),
       backgroundColor: style.background,
+      borderSide: BorderSide(color: style.borderColor),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -81,8 +82,9 @@ class PassOptionCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: compact ? 0.78 : 0.66),
+              color: const Color(0xFFFFFCFA),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: style.softBorderColor),
             ),
             child: Row(
               children: [
@@ -143,38 +145,44 @@ _PassCardStyle _styleForPass(PassType type) {
     case PassType.day:
       return const _PassCardStyle(
         background: Color(0xFFF8D2BD),
-        titleColor: Color(0xFF8E3F19),
-        subtitleColor: Color(0xFF895541),
+        titleColor: Color(0xFF6E2F10),
+        subtitleColor: Color(0xFF704A39),
         badgeBackground: Color(0xFFFFEBD9),
-        badgeText: Color(0xFFB75A20),
+        badgeText: Color(0xFF914314),
         activeBadge: Color(0xFFE46F2A),
         buttonColor: Color(0xFFE46F2A),
         iconBackground: Color(0xFFFFE9DE),
-        iconColor: Color(0xFFD75D18),
+        iconColor: Color(0xFFC85516),
+        borderColor: Color(0xFFF0BA99),
+        softBorderColor: Color(0xFFF3D8C8),
       );
     case PassType.monthly:
       return const _PassCardStyle(
-        background: Color(0xFFF2F1F0),
+        background: Color(0xFFFFFCFA),
         titleColor: Color(0xFF2A2725),
-        subtitleColor: Color(0xFF69615D),
-        badgeBackground: Color(0xFFE9E4DF),
-        badgeText: Color(0xFF68605C),
+        subtitleColor: Color(0xFF59534F),
+        badgeBackground: Color(0xFFF6EEE7),
+        badgeText: Color(0xFF6B5446),
         activeBadge: Color(0xFFE46F2A),
         buttonColor: Color(0xFFE46F2A),
         iconBackground: Color(0xFFFFFFFF),
         iconColor: Color(0xFF2E2A27),
+        borderColor: Color(0xFFE7D7CA),
+        softBorderColor: Color(0xFFECE2DA),
       );
     case PassType.annual:
       return const _PassCardStyle(
-        background: Color(0xFFF2F1F0),
+        background: Color(0xFFFFFCFA),
         titleColor: Color(0xFF2A2725),
-        subtitleColor: Color(0xFF69615D),
-        badgeBackground: Color(0xFFE9E4DF),
-        badgeText: Color(0xFF68605C),
+        subtitleColor: Color(0xFF59534F),
+        badgeBackground: Color(0xFFF6EEE7),
+        badgeText: Color(0xFF6B5446),
         activeBadge: Color(0xFFE46F2A),
         buttonColor: Color(0xFFE46F2A),
         iconBackground: Color(0xFFFFFFFF),
         iconColor: Color(0xFF2E2A27),
+        borderColor: Color(0xFFE7D7CA),
+        softBorderColor: Color(0xFFECE2DA),
       );
   }
 }
@@ -190,6 +198,8 @@ class _PassCardStyle {
     required this.buttonColor,
     required this.iconBackground,
     required this.iconColor,
+    required this.borderColor,
+    required this.softBorderColor,
   });
 
   final Color background;
@@ -201,4 +211,6 @@ class _PassCardStyle {
   final Color buttonColor;
   final Color iconBackground;
   final Color iconColor;
+  final Color borderColor;
+  final Color softBorderColor;
 }

@@ -108,16 +108,9 @@ class AccountScreen extends StatelessWidget {
                   value: _formatTime(currentBooking.bookedAt),
                 ),
                 const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () {
-                    viewModel.completeCurrentBooking();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Ride marked as completed.'),
-                      ),
-                    );
-                  },
-                  child: const Text('Complete ride'),
+                OutlinedButton(
+                  onPressed: () => viewModel.changeTab(0),
+                  child: const Text('Open in history'),
                 ),
               ],
             ),

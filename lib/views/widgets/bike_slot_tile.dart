@@ -11,7 +11,6 @@ class BikeSlotTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return InkWell(
       onTap: onTap,
@@ -19,12 +18,14 @@ class BikeSlotTile extends StatelessWidget {
       child: Ink(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: slot.isAvailable
+              ? const Color(0xFFFFFCFA)
+              : const Color(0xFFF8F3EE),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: slot.isAvailable
-                ? const Color(0xFFFFE0D0)
-                : const Color(0xFFE8E0D8),
+                ? const Color(0xFFF0C5AA)
+                : const Color(0xFFDDD2C8),
           ),
           boxShadow: [
             BoxShadow(
@@ -55,8 +56,8 @@ class BikeSlotTile extends StatelessWidget {
                     style: theme.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: slot.isAvailable
-                          ? const Color(0xFFD96421)
-                          : const Color(0xFF90867F),
+                          ? const Color(0xFFB84A10)
+                          : const Color(0xFF726A64),
                     ),
                   ),
                 ),
@@ -67,7 +68,7 @@ class BikeSlotTile extends StatelessWidget {
                       : Icons.block_rounded,
                   color: slot.isAvailable
                       ? const Color(0xFFE46F2A)
-                      : const Color(0xFFB6AAA2),
+                      : const Color(0xFF91857D),
                 ),
               ],
             ),
@@ -76,6 +77,9 @@ class BikeSlotTile extends StatelessWidget {
               slot.isAvailable ? 'Available bike' : 'Empty slot',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
+                color: slot.isAvailable
+                    ? const Color(0xFF2A2725)
+                    : const Color(0xFF5E5751),
               ),
             ),
             const SizedBox(height: 6),
@@ -84,29 +88,34 @@ class BikeSlotTile extends StatelessWidget {
                   ? 'Ready to reserve now'
                   : 'No bike parked in this slot',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+                color: slot.isAvailable
+                    ? const Color(0xFF544E48)
+                    : const Color(0xFF746C65),
               ),
             ),
             const Spacer(),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: slot.isAvailable
-                    ? const Color(0xFFE46F2A)
-                    : const Color(0xFFF1ECE7),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                slot.isAvailable ? 'Book now' : 'Unavailable',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.labelLarge?.copyWith(
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  slot.isAvailable
+                      ? Icons.touch_app_rounded
+                      : Icons.remove_circle_outline_rounded,
+                  size: 18,
                   color: slot.isAvailable
-                      ? Colors.white
-                      : const Color(0xFF9B8F87),
+                      ? const Color(0xFFE46F2A)
+                      : const Color(0xFF7D736D),
                 ),
-              ),
+                const SizedBox(width: 8),
+                Text(
+                  slot.isAvailable ? 'Tap to book' : 'Unavailable',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: slot.isAvailable
+                        ? const Color(0xFFE46F2A)
+                        : const Color(0xFF7D736D),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -88,7 +88,7 @@ class AppShellScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                   child: InkWell(
-                    onTap: () => viewModel.changeTab(3),
+                    onTap: () => viewModel.changeTab(0),
                     borderRadius: BorderRadius.circular(24),
                     child: SectionCard(
                       backgroundColor: const Color(0xFF2F2A27),

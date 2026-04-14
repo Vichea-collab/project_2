@@ -75,12 +75,18 @@ class BookingSuccessScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 22),
                 FilledButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('View booking'),
+                  onPressed: () {
+                    viewModel.changeTab(0);
+                    Navigator.of(context).pop(true);
+                  },
+                  child: const Text('View current booking'),
                 ),
                 const SizedBox(height: 10),
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
+                  onPressed: () {
+                    viewModel.changeTab(1);
+                    Navigator.of(context).pop(true);
+                  },
                   child: const Text('Back to station'),
                 ),
               ],

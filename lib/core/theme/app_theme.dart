@@ -17,7 +17,7 @@ class AppTheme {
 
     return ThemeData(
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: const Color(0xFFF7F4EF),
+      scaffoldBackgroundColor: const Color(0xFFF6F1EA),
       useMaterial3: true,
       textTheme: ThemeData.light().textTheme.copyWith(
         headlineLarge: const TextStyle(
@@ -45,12 +45,12 @@ class AppTheme {
         bodyLarge: const TextStyle(
           fontSize: 15,
           height: 1.4,
-          color: Color(0xFF5D5651),
+          color: Color(0xFF49433E),
         ),
         bodyMedium: const TextStyle(
           fontSize: 13,
           height: 1.4,
-          color: Color(0xFF6B645F),
+          color: Color(0xFF5A544E),
         ),
         labelLarge: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
       ),
@@ -62,7 +62,7 @@ class AppTheme {
         scrolledUnderElevation: 0,
       ),
       cardTheme: CardThemeData(
-        color: Colors.white,
+        color: const Color(0xFFFFFCFA),
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -81,7 +81,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: const Color(0xFF2E2A27),
-          side: const BorderSide(color: Color(0xFFE4D9CD)),
+          side: const BorderSide(color: Color(0xFFD9C7B8)),
           minimumSize: const Size.fromHeight(54),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
@@ -90,22 +90,26 @@ class AppTheme {
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: const Color(0xFFF2ECE5),
+        backgroundColor: const Color(0xFFFFF4EC),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
         labelStyle: const TextStyle(
-          color: Color(0xFF4B443F),
+          color: Color(0xFF5A4336),
           fontWeight: FontWeight.w600,
         ),
-        side: BorderSide.none,
+        side: const BorderSide(color: Color(0xFFF1D3BE)),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFFFE5D6),
+        indicatorColor: const Color(0xFFFFD9C3),
         elevation: 0,
         height: 74,
         labelTextStyle: WidgetStateProperty.all(
           const TextStyle(fontWeight: FontWeight.w700),
         ),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: Color(0xFFE4D8CD),
+        thickness: 1,
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: const Color(0xFF2F2A27),
