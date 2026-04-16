@@ -1,9 +1,26 @@
-import '../models/bike_slot.dart';
-import '../models/bike_station.dart';
-import '../models/pass_type.dart';
+import 'dart:async';
+
+import '../../models/bike_slot.dart';
+import '../../models/bike_station.dart';
+import '../../models/current_booking.dart';
+import '../../models/pass_type.dart';
+import '../../models/ride_pass.dart';
+import '../local/ride_local_storage.dart';
 import 'ride_repository.dart';
 
 class MockRideRepository implements RideRepository {
+  MockRideRepository({required RideLocalStorage localStorage})
+    : _localStorage = localStorage {
+    _stations = _seedStations();
+    _controller = StreamController<List<BikeStation>>.broadcast(
+      onListen: () => _controller.add(List<BikeStation>.from(_stations)),
+    );
+  }
+
+  final RideLocalStorage _localStorage;
+  late final StreamController<List<BikeStation>> _controller;
+  late List<BikeStation> _stations;
+
   @override
   Future<List<PassType>> fetchPassTypes() async {
     await Future<void>.delayed(const Duration(milliseconds: 250));
@@ -11,9 +28,60 @@ class MockRideRepository implements RideRepository {
   }
 
   @override
-  Future<List<BikeStation>> fetchStations() async {
-    await Future<void>.delayed(const Duration(milliseconds: 350));
+  Stream<List<BikeStation>> watchStations() async* {
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    yield List<BikeStation>.from(_stations);
+    yield* _controller.stream;
+  }
 
+  @override
+  Future<RidePass?> loadActivePass() => _localStorage.loadActivePass();
+
+  @override
+  Future<void> saveActivePass(RidePass? pass) =>
+      _localStorage.saveActivePass(pass);
+
+  @override
+  Future<bool> loadSingleTicket() => _localStorage.loadSingleTicket();
+
+  @override
+  Future<void> saveSingleTicket(bool value) =>
+      _localStorage.saveSingleTicket(value);
+
+  @override
+  Future<CurrentBooking?> loadCurrentBooking() =>
+      _localStorage.loadCurrentBooking();
+
+  @override
+  Future<void> saveCurrentBooking(CurrentBooking? booking) =>
+      _localStorage.saveCurrentBooking(booking);
+
+  @override
+  Future<void> bookBike({
+    required String stationId,
+    required String slotId,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+
+    _stations = _stations.map((station) {
+      if (station.id != stationId) {
+        return station;
+      }
+
+      final slots = station.slots
+          .map(
+            (slot) =>
+                slot.id == slotId ? slot.copyWith(isAvailable: false) : slot,
+          )
+          .toList();
+
+      return station.copyWith(slots: slots);
+    }).toList();
+
+    _controller.add(List<BikeStation>.from(_stations));
+  }
+
+  List<BikeStation> _seedStations() {
     return const [
       BikeStation(
         id: 'st-1',

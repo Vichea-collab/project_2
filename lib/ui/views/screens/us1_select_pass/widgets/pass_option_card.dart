@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../data/models/pass_type.dart';
-import 'section_card.dart';
+import '../../../../../models/pass_type.dart';
+import '../../../widgets/section_card.dart';
 
 class PassOptionCard extends StatelessWidget {
   const PassOptionCard({

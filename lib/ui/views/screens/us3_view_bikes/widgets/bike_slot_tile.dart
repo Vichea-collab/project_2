@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../data/models/bike_slot.dart';
+import '../../../../../models/bike_slot.dart';
 
 class BikeSlotTile extends StatelessWidget {
   const BikeSlotTile({super.key, required this.slot, required this.onTap});

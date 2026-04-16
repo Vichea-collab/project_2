@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../data/models/bike_station.dart';
+import '../../../../../models/bike_station.dart';
 
 class StationMapPanel extends StatelessWidget {
   const StationMapPanel({

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'data/repositories/mock_ride_repository.dart';
-import 'viewmodels/ride_app_view_model.dart';
-import 'views/screens/app_shell_screen.dart';
+import 'data/repositories/ride_repository.dart';
+import 'ui/viewmodels/ride_app_view_model.dart';
+import 'ui/views/screens/app_shell_screen.dart';
 
 class RideRentalApp extends StatefulWidget {
-  const RideRentalApp({super.key});
+  const RideRentalApp({super.key, required this.repository});
+
+  final RideRepository repository;
 
   @override
   State<RideRentalApp> createState() => _RideRentalAppState();
@@ -18,7 +20,7 @@ class _RideRentalAppState extends State<RideRentalApp> {
   @override
   void initState() {
     super.initState();
-    _viewModel = RideAppViewModel(repository: MockRideRepository());
+    _viewModel = RideAppViewModel(repository: widget.repository);
     _viewModel.initialize();
   }
 

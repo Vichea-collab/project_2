@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../data/models/bike_slot.dart';
-import '../../viewmodels/ride_app_view_model.dart';
-import '../widgets/bike_slot_tile.dart';
-import '../widgets/station_map_panel.dart';
+import '../../../../../models/bike_slot.dart';
+import '../view_model/stations_view_model.dart';
+import '../../us3_view_bikes/widgets/bike_slot_tile.dart';
+import 'station_map_panel.dart';
 
-class StationsScreen extends StatelessWidget {
-  const StationsScreen({
+class StationsContent extends StatelessWidget {
+  const StationsContent({
     super.key,
     required this.viewModel,
     required this.onBookBike,
   });
 
-  final RideAppViewModel viewModel;
+  final StationsViewModel viewModel;
   final ValueChanged<BikeSlot> onBookBike;
 
   @override
@@ -117,7 +117,7 @@ class StationsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 18),
                           Text(
-                            'Bikes and slots',
+                            'US3 · Bikes and slots',
                             style: theme.textTheme.titleLarge,
                           ),
                           const SizedBox(height: 6),

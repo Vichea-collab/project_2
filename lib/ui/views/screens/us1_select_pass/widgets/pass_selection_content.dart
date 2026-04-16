@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
-import '../../viewmodels/ride_app_view_model.dart';
-import '../widgets/pass_option_card.dart';
-import '../widgets/section_card.dart';
+import '../../../widgets/section_card.dart';
+import '../view_model/pass_selection_view_model.dart';
+import 'pass_option_card.dart';
 
-class PassSelectionScreen extends StatelessWidget {
-  const PassSelectionScreen({
+class PassSelectionContent extends StatelessWidget {
+  const PassSelectionContent({
     super.key,
     required this.viewModel,
-    this.selectionMode = false,
+    required this.onSelectPass,
   });
 
-  final RideAppViewModel viewModel;
-  final bool selectionMode;
+  final PassSelectionViewModel viewModel;
+  final ValueChanged<int> onSelectPass;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final activePass = viewModel.activePass;
+    final activePassType = viewModel.activePassType;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
@@ -37,7 +37,7 @@ class PassSelectionScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: const Text(
-                  'Ride subscription',
+                  'US1 · Select a Pass',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -46,18 +46,14 @@ class PassSelectionScreen extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               Text(
-                selectionMode
-                    ? 'Select a pass'
-                    : 'Choose the pass that fits you',
+                viewModel.heroTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: Colors.white,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
-                activePass == null
-                    ? 'Pick one active pass. Buying a new pass replaces the current one.'
-                    : '${activePass.type.title} is active until ${_formatDate(activePass.expirationDate)}.',
+                viewModel.heroSubtitle,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: Colors.white.withValues(alpha: 0.78),
                 ),
@@ -67,7 +63,7 @@ class PassSelectionScreen extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  _HeroStat(value: '1', label: 'Tap purchase'),
+                  _HeroStat(value: '1', label: 'Active pass'),
                   _HeroStat(value: '24/7', label: 'Station access'),
                   _HeroStat(value: '∞', label: 'Short rides'),
                 ],
@@ -76,7 +72,7 @@ class PassSelectionScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        if (activePass != null) ...[
+        if (activePassType != null) ...[
           SectionCard(
             backgroundColor: const Color(0xFFFFEEE3),
             child: Row(
@@ -96,12 +92,12 @@ class PassSelectionScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${activePass.type.title} active',
+                        '${activePassType.title} active',
                         style: theme.textTheme.titleLarge,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Expires ${_formatDate(activePass.expirationDate)}',
+                        'Your next booking can use this pass directly.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF9C5429),
                         ),
@@ -115,36 +111,22 @@ class PassSelectionScreen extends StatelessWidget {
           const SizedBox(height: 18),
         ],
         Text(
-          selectionMode ? 'Available passes' : 'Available subscriptions',
+          viewModel.selectionMode
+              ? 'Available passes'
+              : 'Available subscriptions',
           style: theme.textTheme.titleLarge,
         ),
         const SizedBox(height: 6),
         Text(
-          'Clean, modern cards aligned with your Figma direction.',
+          'Choose one pass type to unlock repeated rentals.',
           style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: 16),
-        for (final passType in viewModel.passTypes) ...[
+        for (var index = 0; index < viewModel.passTypes.length; index++) ...[
           PassOptionCard(
-            passType: passType,
-            isActive: activePass?.type == passType,
-            onPressed: () async {
-              final messenger = ScaffoldMessenger.of(context);
-              await viewModel.activatePass(passType);
-
-              if (!context.mounted) {
-                return;
-              }
-
-              if (selectionMode) {
-                Navigator.of(context).pop(passType);
-                return;
-              }
-
-              messenger.showSnackBar(
-                SnackBar(content: Text('${passType.title} activated.')),
-              );
-            },
+            passType: viewModel.passTypes[index],
+            isActive: activePassType == viewModel.passTypes[index],
+            onPressed: () => onSelectPass(index),
           ),
           const SizedBox(height: 14),
         ],
@@ -192,23 +174,4 @@ class _HeroStat extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatDate(DateTime date) {
-  final months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
-  return '${months[date.month - 1]} ${date.day}, ${date.year}';
 }

@@ -1,0 +1,40 @@
+import 'dart:convert';
+
+import '../../models/pass_type.dart';
+import '../../models/ride_pass.dart';
+
+class RidePassDto {
+  const RidePassDto({required this.typeName, required this.purchasedAtIso});
+
+  final String typeName;
+  final String purchasedAtIso;
+
+  factory RidePassDto.fromDomain(RidePass pass) {
+    return RidePassDto(
+      typeName: pass.type.name,
+      purchasedAtIso: pass.purchasedAt.toIso8601String(),
+    );
+  }
+
+  factory RidePassDto.fromJsonString(String source) {
+    final json = jsonDecode(source) as Map<String, dynamic>;
+    return RidePassDto(
+      typeName: (json['typeName'] ?? '').toString(),
+      purchasedAtIso: (json['purchasedAtIso'] ?? '').toString(),
+    );
+  }
+
+  RidePass toDomain() {
+    return RidePass(
+      type: PassType.values.firstWhere(
+        (item) => item.name == typeName,
+        orElse: () => PassType.day,
+      ),
+      purchasedAt: DateTime.parse(purchasedAtIso),
+    );
+  }
+
+  String toJsonString() {
+    return jsonEncode({'typeName': typeName, 'purchasedAtIso': purchasedAtIso});
+  }
+}

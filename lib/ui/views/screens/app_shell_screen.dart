@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../data/models/bike_slot.dart';
+import '../../../models/bike_slot.dart';
 import '../../viewmodels/ride_app_view_model.dart';
-import '../widgets/section_card.dart';
-import 'account_screen.dart';
-import 'booking_screen.dart';
-import 'history_screen.dart';
-import 'pass_selection_screen.dart';
-import 'stations_screen.dart';
+import 'us1_select_pass/pass_selection_screen.dart';
+import 'us2_view_stations/stations_screen.dart';
+import 'us4_book_bike/booking_screen.dart';
 
 class AppShellScreen extends StatelessWidget {
   const AppShellScreen({super.key, required this.viewModel});
@@ -20,8 +17,29 @@ class AppShellScreen extends StatelessWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (viewModel.errorMessage != null) {
-      return Scaffold(body: Center(child: Text(viewModel.errorMessage!)));
+    if (viewModel.errorMessage != null && viewModel.stations.isEmpty) {
+      return Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  viewModel.errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: viewModel.initialize,
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
 
     final header = _headerForTab(viewModel.currentTabIndex, viewModel);
@@ -74,59 +92,14 @@ class AppShellScreen extends StatelessWidget {
                 child: IndexedStack(
                   index: viewModel.currentTabIndex,
                   children: [
-                    HistoryScreen(viewModel: viewModel),
                     StationsScreen(
                       viewModel: viewModel,
                       onBookBike: (slot) => _openBooking(context, slot),
                     ),
                     PassSelectionScreen(viewModel: viewModel),
-                    AccountScreen(viewModel: viewModel),
                   ],
                 ),
               ),
-              if (viewModel.currentBooking != null)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                  child: InkWell(
-                    onTap: () => viewModel.changeTab(0),
-                    borderRadius: BorderRadius.circular(24),
-                    child: SectionCard(
-                      backgroundColor: const Color(0xFF2F2A27),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: Container(
-                          width: 46,
-                          height: 46,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(
-                            Icons.check_circle_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                        title: const Text(
-                          'Current booking',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${viewModel.currentBooking!.stationName} • Slot ${viewModel.currentBooking!.slotLabel}',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.78),
-                          ),
-                        ),
-                        trailing: const Icon(
-                          Icons.chevron_right_rounded,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),
@@ -136,11 +109,6 @@ class AppShellScreen extends StatelessWidget {
         onDestinationSelected: viewModel.changeTab,
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history_rounded),
-            label: 'History',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.map_outlined),
             selectedIcon: Icon(Icons.map_rounded),
             label: 'Stations',
@@ -149,11 +117,6 @@ class AppShellScreen extends StatelessWidget {
             icon: Icon(Icons.confirmation_num_outlined),
             selectedIcon: Icon(Icons.confirmation_num_rounded),
             label: 'Passes',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Account',
           ),
         ],
       ),
@@ -182,22 +145,12 @@ class AppShellScreen extends StatelessWidget {
 _HeaderContent _headerForTab(int index, RideAppViewModel viewModel) {
   switch (index) {
     case 0:
-      return const _HeaderContent(
-        title: 'History',
-        subtitle: 'Recent bookings and pass activity',
-      );
-    case 1:
       return _HeaderContent(
         title: 'Stations',
         subtitle: '${viewModel.totalAvailableBikes} bikes available nearby',
       );
-    case 2:
+    case 1:
       return _HeaderContent(title: 'Passes', subtitle: viewModel.accessLabel);
-    case 3:
-      return const _HeaderContent(
-        title: 'Account',
-        subtitle: 'Bookings, access, and rider settings',
-      );
     default:
       return const _HeaderContent(
         title: 'RideFlow',
