@@ -1,4 +1,5 @@
 import '../../models/bike_station.dart';
+import '../firebase/ride_database_schema.dart';
 import 'bike_slot_dto.dart';
 
 class BikeStationDto {
@@ -19,7 +20,7 @@ class BikeStationDto {
   final List<BikeSlotDto> slots;
 
   factory BikeStationDto.fromMap(String id, Map<Object?, Object?> map) {
-    final rawSlots = map['slots'];
+    final rawSlots = map[RideDatabaseSchema.stationSlots];
     final slots = <BikeSlotDto>[];
 
     if (rawSlots is Map) {
@@ -40,10 +41,10 @@ class BikeStationDto {
 
     return BikeStationDto(
       id: id,
-      name: (map['name'] ?? '').toString(),
-      address: (map['address'] ?? '').toString(),
-      mapX: _toDouble(map['mapX']),
-      mapY: _toDouble(map['mapY']),
+      name: (map[RideDatabaseSchema.stationName] ?? '').toString(),
+      address: (map[RideDatabaseSchema.stationAddress] ?? '').toString(),
+      mapX: _toDouble(map[RideDatabaseSchema.stationMapX]),
+      mapY: _toDouble(map[RideDatabaseSchema.stationMapY]),
       slots: slots,
     );
   }
@@ -73,11 +74,13 @@ class BikeStationDto {
   Map<String, Object?> toMap() {
     return {
       'id': id,
-      'name': name,
-      'address': address,
-      'mapX': mapX,
-      'mapY': mapY,
-      'slots': {for (final slot in slots) slot.id: slot.toMap()},
+      RideDatabaseSchema.stationName: name,
+      RideDatabaseSchema.stationAddress: address,
+      RideDatabaseSchema.stationMapX: mapX,
+      RideDatabaseSchema.stationMapY: mapY,
+      RideDatabaseSchema.stationSlots: {
+        for (final slot in slots) slot.id: slot.toMap(),
+      },
     };
   }
 }

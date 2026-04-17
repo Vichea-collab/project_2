@@ -1,4 +1,5 @@
 import '../../models/bike_slot.dart';
+import '../firebase/ride_database_schema.dart';
 
 class BikeSlotDto {
   const BikeSlotDto({
@@ -14,8 +15,8 @@ class BikeSlotDto {
   factory BikeSlotDto.fromMap(String id, Map<Object?, Object?> map) {
     return BikeSlotDto(
       id: id,
-      label: (map['label'] ?? id).toString(),
-      isAvailable: map['isAvailable'] == true,
+      label: (map[RideDatabaseSchema.slotLabel] ?? id).toString(),
+      isAvailable: map[RideDatabaseSchema.slotIsAvailable] == true,
     );
   }
 
@@ -32,6 +33,10 @@ class BikeSlotDto {
   }
 
   Map<String, Object?> toMap() {
-    return {'id': id, 'label': label, 'isAvailable': isAvailable};
+    return {
+      RideDatabaseSchema.slotId: id,
+      RideDatabaseSchema.slotLabel: label,
+      RideDatabaseSchema.slotIsAvailable: isAvailable,
+    };
   }
 }

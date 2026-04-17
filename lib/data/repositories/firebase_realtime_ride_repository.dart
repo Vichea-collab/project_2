@@ -5,6 +5,7 @@ import '../../models/current_booking.dart';
 import '../../models/pass_type.dart';
 import '../../models/ride_pass.dart';
 import '../dtos/bike_station_dto.dart';
+import '../firebase/ride_database_schema.dart';
 import '../local/ride_local_storage.dart';
 import 'ride_repository.dart';
 
@@ -18,7 +19,8 @@ class FirebaseRealtimeRideRepository implements RideRepository {
   final FirebaseDatabase _database;
   final RideLocalStorage _localStorage;
 
-  DatabaseReference get _stationsRef => _database.ref('stations');
+  DatabaseReference get _stationsRef =>
+      _database.ref(RideDatabaseSchema.stations);
 
   @override
   Future<List<PassType>> fetchPassTypes() async {
@@ -75,16 +77,22 @@ class FirebaseRealtimeRideRepository implements RideRepository {
     required String stationId,
     required String slotId,
   }) async {
-    final slotRef = _stationsRef.child('$stationId/slots/$slotId');
+    final slotRef = _stationsRef.child(
+      '$stationId/${RideDatabaseSchema.stationSlots}/$slotId',
+    );
 
     final result = await slotRef.runTransaction((currentData) {
       if (currentData is Map) {
-        final isAvailable = currentData['isAvailable'] == true;
+        final isAvailable =
+            currentData[RideDatabaseSchema.slotIsAvailable] == true;
         if (!isAvailable) {
           return Transaction.abort();
         }
 
-        return Transaction.success({...currentData, 'isAvailable': false});
+        return Transaction.success({
+          ...currentData,
+          RideDatabaseSchema.slotIsAvailable: false,
+        });
       }
 
       return Transaction.abort();
