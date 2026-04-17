@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData light() {
-    const primary = Color(0xFFE46F2A);
-    const secondary = Color(0xFFF08A4B);
-    const tertiary = Color(0xFFFFC6A6);
-    const surface = Color(0xFFFFFBF7);
+    const primary = Color(0xFFC56B2A);
+    const secondary = Color(0xFFDFC2A8);
+    const tertiary = Color(0xFFEFE3D6);
+    const surface = Color(0xFFFBF8F4);
 
     final colorScheme = ColorScheme.fromSeed(
       seedColor: primary,
@@ -17,7 +17,7 @@ class AppTheme {
 
     return ThemeData(
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: const Color(0xFFF6F1EA),
+      scaffoldBackgroundColor: const Color(0xFFF4F0EA),
       useMaterial3: true,
       textTheme: ThemeData.light().textTheme.copyWith(
         headlineLarge: const TextStyle(
@@ -27,7 +27,7 @@ class AppTheme {
           color: Color(0xFF1E1C1A),
         ),
         headlineSmall: const TextStyle(
-          fontSize: 28,
+          fontSize: 30,
           height: 1.1,
           fontWeight: FontWeight.w800,
           color: Color(0xFF1E1C1A),
@@ -44,12 +44,12 @@ class AppTheme {
         ),
         bodyLarge: const TextStyle(
           fontSize: 15,
-          height: 1.4,
+          height: 1.5,
           color: Color(0xFF49433E),
         ),
         bodyMedium: const TextStyle(
           fontSize: 13,
-          height: 1.4,
+          height: 1.45,
           color: Color(0xFF5A544E),
         ),
         labelLarge: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
@@ -62,30 +62,31 @@ class AppTheme {
         scrolledUnderElevation: 0,
       ),
       cardTheme: CardThemeData(
-        color: const Color(0xFFFFFCFA),
+        color: const Color(0xFFFEFCF9),
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(54),
+          elevation: 0,
+          minimumSize: const Size.fromHeight(56),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: const Color(0xFF2E2A27),
-          side: const BorderSide(color: Color(0xFFD9C7B8)),
-          minimumSize: const Size.fromHeight(54),
+          side: const BorderSide(color: Color(0xFFE0D6CB)),
+          minimumSize: const Size.fromHeight(56),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
       ),
@@ -99,8 +100,8 @@ class AppTheme {
         side: const BorderSide(color: Color(0xFFF1D3BE)),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFFFD9C3),
+        backgroundColor: const Color(0xFFFCFAF7),
+        indicatorColor: const Color(0xFFF2E3D5),
         elevation: 0,
         height: 74,
         labelTextStyle: WidgetStateProperty.all(

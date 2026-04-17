@@ -133,9 +133,7 @@ class AppShellScreen extends StatelessWidget {
     if (booked == true && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Bike ${slot.label} booked at ${viewModel.selectedStation?.name}.',
-          ),
+          content: Text('Bike booked at ${viewModel.selectedStation?.name}.'),
         ),
       );
     }

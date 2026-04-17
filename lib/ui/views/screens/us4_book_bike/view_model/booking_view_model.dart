@@ -22,7 +22,7 @@ class BookingViewModel extends ChangeNotifier {
   bool get isPurchasingTicket => _isPurchasingTicket;
   String? get actionError => _actionError;
 
-  String get bikeLabel => 'Bike #${slot.label}';
+  String get bikeLabel => 'Selected bike';
 
   String get stationName => _appViewModel.selectedStation?.name ?? '-';
   String get slotLabel => slot.label;

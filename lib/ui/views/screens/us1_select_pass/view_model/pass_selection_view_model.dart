@@ -21,15 +21,19 @@ class PassSelectionViewModel extends ChangeNotifier {
   String? get errorMessage => _appViewModel.errorMessage;
 
   String get heroTitle =>
-      selectionMode ? 'Select a pass' : 'Choose the pass that fits you';
+      selectionMode ? 'Choose pass access' : 'Choose the pass that fits you';
 
   String get heroSubtitle {
     final activePass = _appViewModel.activePass;
     if (activePass == null) {
-      return 'Pick one active pass. Buying a new pass replaces the current one.';
+      return selectionMode
+          ? 'Pick one pass to continue this reservation. Buying a new pass replaces the current one.'
+          : 'Pick one active pass. Buying a new pass replaces the current one.';
     }
 
-    return '${activePass.type.title} is active until ${_formatDate(activePass.expirationDate)}.';
+    return selectionMode
+        ? '${activePass.type.title} is active until ${_formatDate(activePass.expirationDate)}. You can keep it or replace it for this booking.'
+        : '${activePass.type.title} is active until ${_formatDate(activePass.expirationDate)}.';
   }
 
   Future<bool> activatePass(PassType passType) {

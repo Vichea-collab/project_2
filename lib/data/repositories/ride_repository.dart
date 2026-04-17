@@ -5,7 +5,7 @@ import '../../models/ride_pass.dart';
 
 abstract class RideRepository {
   Future<List<PassType>> fetchPassTypes();
-  Stream<List<BikeStation>> watchStations();
+  Future<List<BikeStation>> fetchStations();
   Future<RidePass?> loadActivePass();
   Future<void> saveActivePass(RidePass? pass);
   Future<bool> loadSingleTicket();

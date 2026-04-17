@@ -52,7 +52,7 @@ class BikeSlotTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
-                    slot.label,
+                    slot.isAvailable ? 'Ready' : 'Empty',
                     style: theme.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: slot.isAvailable

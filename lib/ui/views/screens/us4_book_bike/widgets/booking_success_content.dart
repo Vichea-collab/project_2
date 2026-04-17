@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../widgets/section_card.dart';
+import 'booking_flow_shared.dart';
 import '../view_model/booking_view_model.dart';
 
 class BookingSuccessContent extends StatelessWidget {
@@ -24,48 +25,78 @@ class BookingSuccessContent extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: SectionCard(
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+          backgroundColor: const Color(0xFFFCFAF7),
+          borderSide: const BorderSide(color: Color(0xFFE8DED4)),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 84,
-                height: 84,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFFEEE3),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_rounded,
-                  size: 46,
-                  color: Color(0xFFE46F2A),
+              const BookingFlowStepHeader(
+                step: 'Step 3',
+                title: 'Success',
+                description:
+                    'Your reservation is complete and ready for pickup.',
+              ),
+              const SizedBox(height: 22),
+              Center(
+                child: Container(
+                  width: 88,
+                  height: 88,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFEAF4EC),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    size: 46,
+                    color: Color(0xFF2F6A46),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
-                'Booking successful',
-                style: theme.textTheme.headlineSmall?.copyWith(fontSize: 26),
+              Center(
+                child: Text(
+                  'Reservation complete',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall?.copyWith(fontSize: 28),
+                ),
               ),
               const SizedBox(height: 10),
-              Text(
-                'Your bike has been reserved and is ready for pickup.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyLarge,
+              Center(
+                child: Text(
+                  'Your bike is now reserved and ready for pickup.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: const Color(0xFF655E58),
+                  ),
+                ),
               ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8F4EF),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE8DED4)),
                 ),
                 child: Column(
                   children: [
-                    _DetailRow(label: 'Bike', value: viewModel.bikeLabel),
+                    BookingFlowDetailRow(
+                      label: 'Station',
+                      value: viewModel.stationName,
+                    ),
                     const SizedBox(height: 12),
-                    _DetailRow(label: 'Station', value: viewModel.stationName),
+                    BookingFlowDetailRow(
+                      label: 'Slot',
+                      value: viewModel.slotLabel,
+                    ),
                     const SizedBox(height: 12),
-                    _DetailRow(label: 'Slot', value: viewModel.slotLabel),
+                    const BookingFlowDetailRow(
+                      label: 'Status',
+                      value: 'Ready for pickup',
+                      valueColor: Color(0xFF2F6A46),
+                    ),
                   ],
                 ),
               ),
@@ -75,7 +106,7 @@ class BookingSuccessContent extends StatelessWidget {
                 child: const Text('Back to stations'),
               ),
               const SizedBox(height: 10),
-              TextButton(
+              OutlinedButton(
                 onPressed: onOpenPasses,
                 child: const Text('View passes'),
               ),
@@ -83,29 +114,6 @@ class BookingSuccessContent extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(label, style: Theme.of(context).textTheme.bodyMedium),
-        const Spacer(),
-        Text(
-          value,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-        ),
-      ],
     );
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import '../../models/bike_slot.dart';
 import '../../models/bike_station.dart';
 import '../../models/current_booking.dart';
@@ -12,13 +10,9 @@ class MockRideRepository implements RideRepository {
   MockRideRepository({required RideLocalStorage localStorage})
     : _localStorage = localStorage {
     _stations = _seedStations();
-    _controller = StreamController<List<BikeStation>>.broadcast(
-      onListen: () => _controller.add(List<BikeStation>.from(_stations)),
-    );
   }
 
   final RideLocalStorage _localStorage;
-  late final StreamController<List<BikeStation>> _controller;
   late List<BikeStation> _stations;
 
   @override
@@ -28,10 +22,9 @@ class MockRideRepository implements RideRepository {
   }
 
   @override
-  Stream<List<BikeStation>> watchStations() async* {
+  Future<List<BikeStation>> fetchStations() async {
     await Future<void>.delayed(const Duration(milliseconds: 250));
-    yield List<BikeStation>.from(_stations);
-    yield* _controller.stream;
+    return List<BikeStation>.from(_stations);
   }
 
   @override
@@ -77,8 +70,6 @@ class MockRideRepository implements RideRepository {
 
       return station.copyWith(slots: slots);
     }).toList();
-
-    _controller.add(List<BikeStation>.from(_stations));
   }
 
   List<BikeStation> _seedStations() {

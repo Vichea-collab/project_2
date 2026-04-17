@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 
 import '../../data/repositories/ride_repository.dart';
@@ -14,7 +12,6 @@ class RideAppViewModel extends ChangeNotifier {
     : _repository = repository;
 
   final RideRepository _repository;
-  StreamSubscription<List<BikeStation>>? _stationsSubscription;
   RideAppState _state = const RideAppState();
 
   RideAppState get state => _state;
@@ -60,13 +57,12 @@ class RideAppViewModel extends ChangeNotifier {
   }
 
   Future<void> initialize() async {
-    await _stationsSubscription?.cancel();
-
     try {
       _setState(_state.copyWith(isLoading: true, errorMessage: null));
       notifyListeners();
 
       final loadedPassTypes = await _repository.fetchPassTypes();
+      final loadedStations = await _repository.fetchStations();
       var loadedActivePass = await _repository.loadActivePass();
       final loadedSingleTicket = await _repository.loadSingleTicket();
 
@@ -79,34 +75,14 @@ class RideAppViewModel extends ChangeNotifier {
       _setState(
         _state.copyWith(
           passTypes: loadedPassTypes,
+          stations: loadedStations,
           activePass: loadedActivePass,
           hasSingleTicket: loadedSingleTicket,
+          selectedStation: _resolveSelectedStation(loadedStations),
+          isLoading: false,
         ),
       );
-
-      final initialLoad = Completer<void>();
-      _stationsSubscription = _repository.watchStations().listen(
-        (updatedStations) {
-          _applyStations(updatedStations);
-          if (!initialLoad.isCompleted) {
-            initialLoad.complete();
-          }
-        },
-        onError: (Object error) {
-          _setState(
-            _state.copyWith(
-              errorMessage: 'Unable to load station data.',
-              isLoading: false,
-            ),
-          );
-          if (!initialLoad.isCompleted) {
-            initialLoad.complete();
-          }
-          notifyListeners();
-        },
-      );
-
-      await initialLoad.future;
+      notifyListeners();
     } catch (_) {
       _setState(
         _state.copyWith(
@@ -185,13 +161,14 @@ class RideAppViewModel extends ChangeNotifier {
     try {
       _setState(_state.copyWith(errorMessage: null));
       await _repository.bookBike(stationId: station.id, slotId: slot.id);
+      final refreshedStations = await _repository.fetchStations();
 
       if (!hasActivePass) {
         _setState(_state.copyWith(hasSingleTicket: false));
         await _repository.saveSingleTicket(false);
       }
 
-      notifyListeners();
+      _applyStations(refreshedStations);
       return true;
     } catch (_) {
       _setState(
@@ -203,6 +180,18 @@ class RideAppViewModel extends ChangeNotifier {
   }
 
   void _applyStations(List<BikeStation> updatedStations) {
+    final nextSelectedStation = _resolveSelectedStation(updatedStations);
+    _setState(
+      _state.copyWith(
+        stations: updatedStations,
+        selectedStation: nextSelectedStation,
+        isLoading: false,
+      ),
+    );
+    notifyListeners();
+  }
+
+  BikeStation? _resolveSelectedStation(List<BikeStation> updatedStations) {
     BikeStation? nextSelectedStation = selectedStation;
 
     final selectedStationId = selectedStation?.id;
@@ -215,26 +204,12 @@ class RideAppViewModel extends ChangeNotifier {
       }
     }
 
-    nextSelectedStation ??= updatedStations.isEmpty
+    return nextSelectedStation ??= updatedStations.isEmpty
         ? null
         : updatedStations.first;
-    _setState(
-      _state.copyWith(
-        stations: updatedStations,
-        selectedStation: nextSelectedStation,
-        isLoading: false,
-      ),
-    );
-    notifyListeners();
   }
 
   void _setState(RideAppState nextState) {
     _state = nextState;
-  }
-
-  @override
-  void dispose() {
-    _stationsSubscription?.cancel();
-    super.dispose();
   }
 }

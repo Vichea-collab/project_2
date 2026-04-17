@@ -22,6 +22,23 @@ class PassSelectionContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
       children: [
+        if (viewModel.selectionMode) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF2ECE5),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              'Step 2',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: const Color(0xFF5B534D),
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+        ],
         SectionCard(
           backgroundColor: const Color(0xFF2F2A27),
           child: Column(
@@ -36,9 +53,9 @@ class PassSelectionContent extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: const Text(
-                  'US1 · Select a Pass',
-                  style: TextStyle(
+                child: Text(
+                  viewModel.selectionMode ? 'Pass access' : 'Select a pass',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                   ),
@@ -59,13 +76,18 @@ class PassSelectionContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              const Wrap(
+              Wrap(
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  _HeroStat(value: '1', label: 'Active pass'),
-                  _HeroStat(value: '24/7', label: 'Station access'),
-                  _HeroStat(value: '∞', label: 'Short rides'),
+                  _HeroStat(
+                    value: '1',
+                    label: viewModel.selectionMode
+                        ? 'Booking flow'
+                        : 'Active pass',
+                  ),
+                  const _HeroStat(value: '24/7', label: 'Station access'),
+                  const _HeroStat(value: 'Any', label: 'Short rides'),
                 ],
               ),
             ],
@@ -97,7 +119,9 @@ class PassSelectionContent extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Your next booking can use this pass directly.',
+                        viewModel.selectionMode
+                            ? 'Selecting a different pass will replace the current one for this booking.'
+                            : 'Your next booking can use this pass directly.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF9C5429),
                         ),
@@ -112,13 +136,15 @@ class PassSelectionContent extends StatelessWidget {
         ],
         Text(
           viewModel.selectionMode
-              ? 'Available passes'
+              ? 'Step 2 options'
               : 'Available subscriptions',
           style: theme.textTheme.titleLarge,
         ),
         const SizedBox(height: 6),
         Text(
-          'Choose one pass type to unlock repeated rentals.',
+          viewModel.selectionMode
+              ? 'Choose a pass to continue directly to the success screen.'
+              : 'Choose one pass type to unlock repeated rentals.',
           style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: 16),

@@ -7,6 +7,7 @@ import 'booking_success_screen.dart';
 import 'purchase_ticket_screen.dart';
 import 'view_model/booking_view_model.dart';
 import 'widgets/booking_content.dart';
+import 'widgets/booking_flow_shared.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key, required this.viewModel, required this.slot});
@@ -42,13 +43,15 @@ class _BookingScreenState extends State<BookingScreen> {
       animation: _viewModel,
       builder: (context, _) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF7F4EF),
-          appBar: AppBar(title: const Text('Book a Bike')),
-          body: BookingContent(
-            viewModel: _viewModel,
-            onBuyTicket: _openTicketPurchase,
-            onBuyPass: _openPassSelection,
-            onConfirm: _confirmBooking,
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(title: const Text('Step 1 of 3')),
+          body: BookingFlowBackground(
+            child: BookingContent(
+              viewModel: _viewModel,
+              onBuyTicket: _openTicketPurchase,
+              onBuyPass: _openPassSelection,
+              onConfirm: _confirmBooking,
+            ),
           ),
         );
       },
@@ -68,23 +71,30 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Single ticket purchased.')));
+    Navigator.of(context).pop(true);
   }
 
   Future<void> _openPassSelection() async {
-    await Navigator.of(context).push(
+    final result = await Navigator.of(context).push<Object?>(
       MaterialPageRoute<void>(
         builder: (_) => Scaffold(
-          appBar: AppBar(title: const Text('Select a pass')),
-          body: PassSelectionScreen(
-            viewModel: widget.viewModel,
-            selectionMode: true,
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(title: const Text('Step 2 of 3')),
+          body: BookingFlowBackground(
+            child: PassSelectionScreen(
+              viewModel: widget.viewModel,
+              selectionMode: true,
+            ),
           ),
         ),
       ),
     );
+
+    if (!mounted || result == null) {
+      return;
+    }
+
+    await _confirmBooking();
   }
 
   Future<void> _confirmBooking() async {
@@ -110,5 +120,11 @@ class _BookingScreenState extends State<BookingScreen> {
         builder: (_) => BookingSuccessScreen(viewModel: _viewModel),
       ),
     );
+
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.of(context).pop(true);
   }
 }
