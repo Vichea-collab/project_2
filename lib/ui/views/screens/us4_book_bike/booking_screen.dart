@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../models/bike_slot.dart';
 import '../../../viewmodels/ride_app_view_model.dart';
@@ -10,9 +11,8 @@ import 'widgets/booking_content.dart';
 import 'widgets/booking_flow_shared.dart';
 
 class BookingScreen extends StatefulWidget {
-  const BookingScreen({super.key, required this.viewModel, required this.slot});
+  const BookingScreen({super.key, required this.slot});
 
-  final RideAppViewModel viewModel;
   final BikeSlot slot;
 
   @override
@@ -26,7 +26,7 @@ class _BookingScreenState extends State<BookingScreen> {
   void initState() {
     super.initState();
     _viewModel = BookingViewModel(
-      appViewModel: widget.viewModel,
+      appViewModel: context.read<RideAppViewModel>(),
       slot: widget.slot,
     );
   }
@@ -81,10 +81,7 @@ class _BookingScreenState extends State<BookingScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(title: const Text('Step 2 of 3')),
           body: BookingFlowBackground(
-            child: PassSelectionScreen(
-              viewModel: widget.viewModel,
-              selectionMode: true,
-            ),
+            child: PassSelectionScreen(selectionMode: true),
           ),
         ),
       ),
@@ -105,10 +102,11 @@ class _BookingScreenState extends State<BookingScreen> {
     }
 
     if (!success) {
+      final bookingState = _viewModel.state;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _viewModel.actionError ?? 'Unable to confirm the booking.',
+            bookingState.actionError ?? 'Unable to confirm the booking.',
           ),
         ),
       );

@@ -24,6 +24,13 @@ class RidePassDto {
     );
   }
 
+  factory RidePassDto.fromMap(Map<Object?, Object?> source) {
+    return RidePassDto(
+      typeName: (source['typeName'] ?? '').toString(),
+      purchasedAtIso: (source['purchasedAtIso'] ?? '').toString(),
+    );
+  }
+
   RidePass toDomain() {
     return RidePass(
       type: PassType.values.firstWhere(
@@ -36,5 +43,9 @@ class RidePassDto {
 
   String toJsonString() {
     return jsonEncode({'typeName': typeName, 'purchasedAtIso': purchasedAtIso});
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'typeName': typeName, 'purchasedAtIso': purchasedAtIso};
   }
 }

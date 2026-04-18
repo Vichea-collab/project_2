@@ -30,6 +30,14 @@ class CurrentBookingDto {
     );
   }
 
+  factory CurrentBookingDto.fromMap(Map<Object?, Object?> source) {
+    return CurrentBookingDto(
+      stationName: (source['stationName'] ?? '').toString(),
+      slotLabel: (source['slotLabel'] ?? '').toString(),
+      bookedAtIso: (source['bookedAtIso'] ?? '').toString(),
+    );
+  }
+
   CurrentBooking toDomain() {
     return CurrentBooking(
       stationName: stationName,
@@ -44,5 +52,13 @@ class CurrentBookingDto {
       'slotLabel': slotLabel,
       'bookedAtIso': bookedAtIso,
     });
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'stationName': stationName,
+      'slotLabel': slotLabel,
+      'bookedAtIso': bookedAtIso,
+    };
   }
 }

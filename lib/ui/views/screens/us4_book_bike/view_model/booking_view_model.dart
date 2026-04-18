@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../../../../models/bike_slot.dart';
+import '../state/booking_state.dart';
 import '../../../../viewmodels/ride_app_view_model.dart';
 
 class BookingViewModel extends ChangeNotifier {
@@ -11,23 +12,17 @@ class BookingViewModel extends ChangeNotifier {
 
   final RideAppViewModel _appViewModel;
   final BikeSlot slot;
-
-  bool _isConfirming = false;
-  bool _isPurchasingTicket = false;
-  String? _actionError;
+  BookingState _state = const BookingState();
 
   RideAppViewModel get appViewModel => _appViewModel;
-  bool get isBusy => _isConfirming || _isPurchasingTicket;
-  bool get isConfirming => _isConfirming;
-  bool get isPurchasingTicket => _isPurchasingTicket;
-  String? get actionError => _actionError;
+  BookingState get state => _state;
 
   String get bikeLabel => 'Selected bike';
 
-  String get stationName => _appViewModel.selectedStation?.name ?? '-';
+  String get stationName => _appViewModel.state.selectedStation?.name ?? '-';
   String get slotLabel => slot.label;
-  bool get hasActivePass => _appViewModel.hasActivePass;
-  bool get hasSingleTicket => _appViewModel.hasSingleTicket;
+  bool get hasActivePass => _appViewModel.state.hasActivePass;
+  bool get hasSingleTicket => _appViewModel.state.hasSingleTicket;
   bool get canConfirm => hasActivePass || hasSingleTicket;
 
   String get accessTitle {
@@ -42,7 +37,7 @@ class BookingViewModel extends ChangeNotifier {
 
   String get accessDescription {
     if (hasActivePass) {
-      final pass = _appViewModel.activePass;
+      final pass = _appViewModel.state.activePass;
       if (pass == null) {
         return 'Ride access is active for this booking.';
       }
@@ -55,41 +50,49 @@ class BookingViewModel extends ChangeNotifier {
   }
 
   void clearActionError() {
-    if (_actionError == null) {
+    if (_state.actionError == null) {
       return;
     }
-    _actionError = null;
-    notifyListeners();
+    _setState(_state.copyWith(actionError: null));
   }
 
   Future<bool> purchaseSingleTicket() async {
-    _actionError = null;
-    _isPurchasingTicket = true;
-    notifyListeners();
+    _setState(_state.copyWith(actionError: null, isPurchasingTicket: true));
 
     final purchased = await _appViewModel.purchaseSingleTicket();
 
-    _isPurchasingTicket = false;
-    _actionError = purchased
-        ? null
-        : (_appViewModel.errorMessage ?? 'Unable to purchase the ticket.');
-    notifyListeners();
+    _setState(
+      _state.copyWith(
+        isPurchasingTicket: false,
+        actionError: purchased
+            ? null
+            : (_appViewModel.state.errorMessage ??
+                  'Unable to purchase the ticket.'),
+      ),
+    );
     return purchased;
   }
 
   Future<bool> confirmBooking() async {
-    _actionError = null;
-    _isConfirming = true;
-    notifyListeners();
+    _setState(_state.copyWith(actionError: null, isConfirming: true));
 
     final booked = await _appViewModel.confirmBooking(slot);
 
-    _isConfirming = false;
-    _actionError = booked
-        ? null
-        : (_appViewModel.errorMessage ?? 'Unable to confirm the booking.');
-    notifyListeners();
+    _setState(
+      _state.copyWith(
+        isConfirming: false,
+        actionError: booked
+            ? null
+            : (_appViewModel.state.errorMessage ??
+                  'Unable to confirm the booking.'),
+      ),
+    );
     return booked;
+  }
+
+  void _setState(BookingState nextState) {
+    _state = nextState;
+    notifyListeners();
   }
 
   void _handleAppStateChanged() {

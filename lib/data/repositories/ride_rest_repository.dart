@@ -2,30 +2,25 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../models/app_user.dart';
 import '../../models/bike_station.dart';
-import '../../models/current_booking.dart';
 import '../../models/pass_type.dart';
-import '../../models/ride_pass.dart';
+import '../api/ride_api_schema.dart';
+import '../dtos/app_user_dto.dart';
 import '../dtos/bike_station_dto.dart';
-import '../firebase/ride_database_schema.dart';
-import '../local/ride_local_storage.dart';
 import 'ride_repository.dart';
 
 class RideRestRepository implements RideRepository {
-  RideRestRepository({
-    required String databaseUrl,
-    required RideLocalStorage localStorage,
-    http.Client? client,
-  }) : _databaseUrl = databaseUrl.replaceFirst(RegExp(r'/$'), ''),
-       _localStorage = localStorage,
-       _client = client ?? http.Client();
+  RideRestRepository({required String databaseUrl, http.Client? client})
+    : databaseUrl = databaseUrl.replaceFirst(RegExp(r'/$'), ''),
+      _client = client ?? http.Client();
 
-  final String _databaseUrl;
-  final RideLocalStorage _localStorage;
+  final String databaseUrl;
   final http.Client _client;
+  static const String defaultUserId = 'u-001';
 
   Uri _uri(String path, [Map<String, String>? queryParameters]) => Uri.parse(
-    '$_databaseUrl/$path.json',
+    '$databaseUrl/$path.json',
   ).replace(queryParameters: queryParameters);
 
   @override
@@ -35,7 +30,7 @@ class RideRestRepository implements RideRepository {
 
   @override
   Future<List<BikeStation>> fetchStations() async {
-    final response = await _client.get(_uri(RideDatabaseSchema.stations));
+    final response = await _client.get(_uri(RideApiSchema.stations));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Unable to fetch stations.');
@@ -64,26 +59,38 @@ class RideRestRepository implements RideRepository {
   }
 
   @override
-  Future<RidePass?> loadActivePass() => _localStorage.loadActivePass();
+  Future<AppUser> fetchCurrentUser() async {
+    final response = await _client.get(
+      _uri('${RideApiSchema.users}/$defaultUserId'),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Unable to fetch the current user.');
+    }
+
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map) {
+      return const AppUser(id: defaultUserId, name: 'Guest Rider');
+    }
+
+    return AppUserDto.fromMap(
+      defaultUserId,
+      Map<Object?, Object?>.from(decoded),
+    ).toDomain();
+  }
 
   @override
-  Future<void> saveActivePass(RidePass? pass) =>
-      _localStorage.saveActivePass(pass);
+  Future<void> saveCurrentUser(AppUser user) async {
+    final response = await _client.put(
+      _uri('${RideApiSchema.users}/${user.id}'),
+      headers: const {'content-type': 'application/json'},
+      body: jsonEncode(AppUserDto.fromDomain(user).toMap()),
+    );
 
-  @override
-  Future<bool> loadSingleTicket() => _localStorage.loadSingleTicket();
-
-  @override
-  Future<void> saveSingleTicket(bool value) =>
-      _localStorage.saveSingleTicket(value);
-
-  @override
-  Future<CurrentBooking?> loadCurrentBooking() =>
-      _localStorage.loadCurrentBooking();
-
-  @override
-  Future<void> saveCurrentBooking(CurrentBooking? booking) =>
-      _localStorage.saveCurrentBooking(booking);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Unable to save the current user.');
+    }
+  }
 
   @override
   Future<void> bookBike({
@@ -91,7 +98,7 @@ class RideRestRepository implements RideRepository {
     required String slotId,
   }) async {
     final slotPath =
-        '${RideDatabaseSchema.stations}/$stationId/${RideDatabaseSchema.stationSlots}/$slotId';
+        '${RideApiSchema.stations}/$stationId/${RideApiSchema.stationSlots}/$slotId';
     final slotUri = _uri(slotPath);
 
     final getResponse = await _client.get(
@@ -111,13 +118,13 @@ class RideRestRepository implements RideRepository {
     }
 
     final currentSlot = Map<String, dynamic>.from(decoded);
-    if (currentSlot[RideDatabaseSchema.slotIsAvailable] != true) {
+    if (currentSlot[RideApiSchema.slotIsAvailable] != true) {
       throw Exception('Bike is no longer available.');
     }
 
     final updatedSlot = <String, dynamic>{
       ...currentSlot,
-      RideDatabaseSchema.slotIsAvailable: false,
+      RideApiSchema.slotIsAvailable: false,
     };
 
     final putResponse = await _client.put(

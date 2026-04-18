@@ -12,13 +12,17 @@ class StationsViewModel extends ChangeNotifier {
 
   final RideAppViewModel _appViewModel;
 
-  List<BikeStation> get stations => _appViewModel.stations;
-  BikeStation? get selectedStation => _appViewModel.selectedStation;
-  String get accessLabel => _appViewModel.accessLabel;
-  bool get hasActivePass => _appViewModel.hasActivePass;
+  List<BikeStation> get stations => _appViewModel.state.stations;
+  BikeStation? get selectedStation => _appViewModel.state.selectedStation;
+  String get accessLabel => _appViewModel.state.accessLabel;
+  bool get hasActivePass => _appViewModel.state.hasActivePass;
 
   void selectStation(String stationId) {
     _appViewModel.selectStation(stationId);
+  }
+
+  void clearSelectedStation() {
+    _appViewModel.clearSelectedStation();
   }
 
   List<BikeSlot> get slots => selectedStation?.slots ?? const [];

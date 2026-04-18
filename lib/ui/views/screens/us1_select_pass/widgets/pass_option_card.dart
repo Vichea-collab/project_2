@@ -20,10 +20,11 @@ class PassOptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final style = _styleForPass(passType);
+    final style = passCardStyleFor(passType);
     final daysLabel = passType.validityDays == 365
         ? '1 year'
         : '${passType.validityDays} days';
+    final expirationLabel = expirationLabelFor(passType);
 
     return SectionCard(
       padding: EdgeInsets.all(compact ? 18 : 20),
@@ -73,7 +74,9 @@ class PassOptionCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            passType.subtitle,
+            isActive
+                ? '${passType.subtitle} Expires $expirationLabel.'
+                : passType.subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: style.subtitleColor,
             ),
@@ -92,7 +95,7 @@ class PassOptionCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    _benefitLabel(passType),
+                    benefitLabelFor(passType),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFF5C5550),
                     ),
@@ -129,7 +132,7 @@ class PassOptionCard extends StatelessWidget {
   }
 }
 
-String _benefitLabel(PassType type) {
+String benefitLabelFor(PassType type) {
   switch (type) {
     case PassType.day:
       return 'Unlimited short rides for 24 hours';
@@ -140,10 +143,30 @@ String _benefitLabel(PassType type) {
   }
 }
 
-_PassCardStyle _styleForPass(PassType type) {
+String expirationLabelFor(PassType type) {
+  final expirationDate = DateTime.now().add(Duration(days: type.validityDays));
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  return '${months[expirationDate.month - 1]} ${expirationDate.day}, ${expirationDate.year}';
+}
+
+PassCardStyle passCardStyleFor(PassType type) {
   switch (type) {
     case PassType.day:
-      return const _PassCardStyle(
+      return const PassCardStyle(
         background: Color(0xFFF8D2BD),
         titleColor: Color(0xFF6E2F10),
         subtitleColor: Color(0xFF704A39),
@@ -157,7 +180,7 @@ _PassCardStyle _styleForPass(PassType type) {
         softBorderColor: Color(0xFFF3D8C8),
       );
     case PassType.monthly:
-      return const _PassCardStyle(
+      return const PassCardStyle(
         background: Color(0xFFFFFCFA),
         titleColor: Color(0xFF2A2725),
         subtitleColor: Color(0xFF59534F),
@@ -171,7 +194,7 @@ _PassCardStyle _styleForPass(PassType type) {
         softBorderColor: Color(0xFFECE2DA),
       );
     case PassType.annual:
-      return const _PassCardStyle(
+      return const PassCardStyle(
         background: Color(0xFFFFFCFA),
         titleColor: Color(0xFF2A2725),
         subtitleColor: Color(0xFF59534F),
@@ -187,8 +210,8 @@ _PassCardStyle _styleForPass(PassType type) {
   }
 }
 
-class _PassCardStyle {
-  const _PassCardStyle({
+class PassCardStyle {
+  const PassCardStyle({
     required this.background,
     required this.titleColor,
     required this.subtitleColor,

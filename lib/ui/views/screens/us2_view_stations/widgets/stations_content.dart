@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../models/bike_slot.dart';
+import '../../../../../models/bike_station.dart';
 import '../view_model/stations_view_model.dart';
-import '../../us3_view_bikes/widgets/bike_slot_tile.dart';
 import 'station_map_panel.dart';
 
 class StationsContent extends StatelessWidget {
   const StationsContent({
     super.key,
     required this.viewModel,
+    required this.onOpenBikes,
     required this.onBookBike,
   });
 
   final StationsViewModel viewModel;
+  final ValueChanged<BikeStation> onOpenBikes;
   final ValueChanged<BikeSlot> onBookBike;
 
   @override
@@ -36,7 +38,7 @@ class StationsContent extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 720, maxHeight: 430),
+              constraints: const BoxConstraints(maxWidth: 720, maxHeight: 300),
               margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -62,7 +64,7 @@ class StationsContent extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: SingleChildScrollView(
+                    child: Padding(
                       padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,6 +101,23 @@ class StationsContent extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                              const SizedBox(width: 8),
+                              Material(
+                                color: const Color(0xFFF7F2EC),
+                                borderRadius: BorderRadius.circular(14),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(14),
+                                  onTap: viewModel.clearSelectedStation,
+                                  child: const SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      color: Color(0xFF6F6660),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -115,37 +134,15 @@ class StationsContent extends StatelessWidget {
                               _StationBadge(label: viewModel.accessLabel),
                             ],
                           ),
-                          const SizedBox(height: 18),
+                          const Spacer(),
                           Text(
-                            'US3 · Bikes and slots',
-                            style: theme.textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Tap any available bike slot to continue booking.',
+                            'See all bikes on a dedicated station details screen.',
                             style: theme.textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 14),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: station.slots.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 1.12,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                ),
-                            itemBuilder: (context, index) {
-                              final slot = station.slots[index];
-                              return BikeSlotTile(
-                                slot: slot,
-                                onTap: slot.isAvailable
-                                    ? () => onBookBike(slot)
-                                    : null,
-                              );
-                            },
+                          FilledButton(
+                            onPressed: () => onOpenBikes(station),
+                            child: const Text('View bikes'),
                           ),
                         ],
                       ),

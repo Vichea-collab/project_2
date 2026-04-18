@@ -9,10 +9,12 @@ class PassSelectionContent extends StatelessWidget {
     super.key,
     required this.viewModel,
     required this.onSelectPass,
+    required this.onCancelPass,
   });
 
   final PassSelectionViewModel viewModel;
   final ValueChanged<int> onSelectPass;
+  final VoidCallback onCancelPass;
 
   @override
   Widget build(BuildContext context) {
@@ -40,55 +42,23 @@ class PassSelectionContent extends StatelessWidget {
           const SizedBox(height: 14),
         ],
         SectionCard(
-          backgroundColor: const Color(0xFF2F2A27),
+          backgroundColor: const Color(0xFFFFF4EC),
+          borderSide: const BorderSide(color: Color(0xFFF1DACA)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  viewModel.selectionMode ? 'Pass access' : 'Select a pass',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 18),
               Text(
                 viewModel.heroTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
+                  color: const Color(0xFF2C2521),
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 viewModel.heroSubtitle,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.78),
+                  color: const Color(0xFF6B625B),
                 ),
-              ),
-              const SizedBox(height: 18),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  _HeroStat(
-                    value: '1',
-                    label: viewModel.selectionMode
-                        ? 'Booking flow'
-                        : 'Active pass',
-                  ),
-                  const _HeroStat(value: '24/7', label: 'Station access'),
-                  const _HeroStat(value: 'Any', label: 'Short rides'),
-                ],
               ),
             ],
           ),
@@ -97,38 +67,61 @@ class PassSelectionContent extends StatelessWidget {
         if (activePassType != null) ...[
           SectionCard(
             backgroundColor: const Color(0xFFFFEEE3),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE46F2A),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: const Icon(Icons.check_rounded, color: Colors.white),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${activePassType.title} active',
-                        style: theme.textTheme.titleLarge,
+                Row(
+                  children: [
+                    Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE46F2A),
+                        borderRadius: BorderRadius.circular(18),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        viewModel.selectionMode
-                            ? 'Selecting a different pass will replace the current one for this booking.'
-                            : 'Your next booking can use this pass directly.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF9C5429),
-                        ),
+                      child: const Icon(
+                        Icons.check_rounded,
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${activePassType.title} active',
+                            style: theme.textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Expires ${viewModel.activePassExpirationLabel}.',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: const Color(0xFF9C5429),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            viewModel.selectionMode
+                                ? 'Selecting a different pass will replace the current one for this booking.'
+                                : 'Your next booking can use this pass directly.',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: const Color(0xFF9C5429),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
+                if (!viewModel.selectionMode) ...[
+                  const SizedBox(height: 14),
+                  OutlinedButton.icon(
+                    onPressed: onCancelPass,
+                    icon: const Icon(Icons.close_rounded),
+                    label: const Text('Cancel subscription'),
+                  ),
+                ],
               ],
             ),
           ),
@@ -157,47 +150,6 @@ class PassSelectionContent extends StatelessWidget {
           const SizedBox(height: 14),
         ],
       ],
-    );
-  }
-}
-
-class _HeroStat extends StatelessWidget {
-  const _HeroStat({required this.value, required this.label});
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 96,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.76),
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -38,10 +38,11 @@ class PurchaseTicketScreen extends StatelessWidget {
     }
 
     if (!purchased) {
+      final bookingState = viewModel.state;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            viewModel.actionError ?? 'Unable to purchase the ticket.',
+            bookingState.actionError ?? 'Unable to purchase the ticket.',
           ),
         ),
       );
@@ -55,10 +56,11 @@ class PurchaseTicketScreen extends StatelessWidget {
     }
 
     if (!booked) {
+      final bookingState = viewModel.state;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            viewModel.actionError ?? 'Unable to complete the booking.',
+            bookingState.actionError ?? 'Unable to complete the booking.',
           ),
         ),
       );

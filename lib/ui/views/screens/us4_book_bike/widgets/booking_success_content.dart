@@ -31,13 +31,7 @@ class BookingSuccessContent extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const BookingFlowStepHeader(
-                step: 'Step 3',
-                title: 'Success',
-                description:
-                    'Your reservation is complete and ready for pickup.',
-              ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 4),
               Center(
                 child: Container(
                   width: 88,

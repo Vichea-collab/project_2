@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../viewmodels/ride_app_view_model.dart';
 import 'view_model/pass_selection_view_model.dart';
 import 'widgets/pass_selection_content.dart';
 
 class PassSelectionScreen extends StatefulWidget {
-  const PassSelectionScreen({
-    super.key,
-    required this.viewModel,
-    this.selectionMode = false,
-  });
+  const PassSelectionScreen({super.key, this.selectionMode = false});
 
-  final RideAppViewModel viewModel;
   final bool selectionMode;
 
   @override
@@ -25,7 +21,7 @@ class _PassSelectionScreenState extends State<PassSelectionScreen> {
   void initState() {
     super.initState();
     _viewModel = PassSelectionViewModel(
-      appViewModel: widget.viewModel,
+      appViewModel: context.read<RideAppViewModel>(),
       selectionMode: widget.selectionMode,
     );
   }
@@ -44,6 +40,7 @@ class _PassSelectionScreenState extends State<PassSelectionScreen> {
         return PassSelectionContent(
           viewModel: _viewModel,
           onSelectPass: (index) => _selectPass(context, index),
+          onCancelPass: () => _cancelPass(context),
         );
       },
     );
@@ -76,6 +73,30 @@ class _PassSelectionScreenState extends State<PassSelectionScreen> {
 
     messenger.showSnackBar(
       SnackBar(content: Text('${passType.title} activated.')),
+    );
+  }
+
+  Future<void> _cancelPass(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final cancelled = await _viewModel.cancelActivePass();
+
+    if (!context.mounted) {
+      return;
+    }
+
+    if (!cancelled) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            _viewModel.errorMessage ?? 'Unable to cancel the active pass.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Subscription cancelled.')),
     );
   }
 }

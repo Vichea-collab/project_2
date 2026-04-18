@@ -1,19 +1,16 @@
+import '../../models/app_user.dart';
 import '../../models/bike_slot.dart';
 import '../../models/bike_station.dart';
-import '../../models/current_booking.dart';
 import '../../models/pass_type.dart';
-import '../../models/ride_pass.dart';
-import '../local/ride_local_storage.dart';
 import 'ride_repository.dart';
 
 class MockRideRepository implements RideRepository {
-  MockRideRepository({required RideLocalStorage localStorage})
-    : _localStorage = localStorage {
+  MockRideRepository() {
     _stations = _seedStations();
   }
 
-  final RideLocalStorage _localStorage;
   late List<BikeStation> _stations;
+  AppUser _currentUser = const AppUser(id: 'u-001', name: 'Sok Dara');
 
   @override
   Future<List<PassType>> fetchPassTypes() async {
@@ -28,26 +25,16 @@ class MockRideRepository implements RideRepository {
   }
 
   @override
-  Future<RidePass?> loadActivePass() => _localStorage.loadActivePass();
+  Future<AppUser> fetchCurrentUser() async {
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    return _currentUser;
+  }
 
   @override
-  Future<void> saveActivePass(RidePass? pass) =>
-      _localStorage.saveActivePass(pass);
-
-  @override
-  Future<bool> loadSingleTicket() => _localStorage.loadSingleTicket();
-
-  @override
-  Future<void> saveSingleTicket(bool value) =>
-      _localStorage.saveSingleTicket(value);
-
-  @override
-  Future<CurrentBooking?> loadCurrentBooking() =>
-      _localStorage.loadCurrentBooking();
-
-  @override
-  Future<void> saveCurrentBooking(CurrentBooking? booking) =>
-      _localStorage.saveCurrentBooking(booking);
+  Future<void> saveCurrentUser(AppUser user) async {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    _currentUser = user;
+  }
 
   @override
   Future<void> bookBike({

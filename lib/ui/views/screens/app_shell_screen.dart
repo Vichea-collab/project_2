@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../models/bike_slot.dart';
+import '../../../models/bike_station.dart';
+import '../../state/ride_app_state.dart';
 import '../../viewmodels/ride_app_view_model.dart';
 import 'us1_select_pass/pass_selection_screen.dart';
 import 'us2_view_stations/stations_screen.dart';
+import 'us3_view_bikes/bikes_screen.dart';
 import 'us4_book_bike/booking_screen.dart';
+import 'us5_history/history_screen.dart';
 
 class AppShellScreen extends StatelessWidget {
-  const AppShellScreen({super.key, required this.viewModel});
-
-  final RideAppViewModel viewModel;
+  const AppShellScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (viewModel.isLoading) {
+    final viewModel = context.watch<RideAppViewModel>();
+    final appState = viewModel.state;
+
+    if (appState.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (viewModel.errorMessage != null && viewModel.stations.isEmpty) {
+    if (appState.errorMessage != null && appState.stations.isEmpty) {
       return Scaffold(
         body: Center(
           child: Padding(
@@ -26,7 +32,7 @@ class AppShellScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  viewModel.errorMessage!,
+                  appState.errorMessage!,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
@@ -42,7 +48,7 @@ class AppShellScreen extends StatelessWidget {
       );
     }
 
-    final header = _headerForTab(viewModel.currentTabIndex, viewModel);
+    final header = buildAppShellHeader(appState.currentTabIndex, appState);
 
     return Scaffold(
       body: Container(
@@ -90,13 +96,14 @@ class AppShellScreen extends StatelessWidget {
               ),
               Expanded(
                 child: IndexedStack(
-                  index: viewModel.currentTabIndex,
+                  index: appState.currentTabIndex,
                   children: [
                     StationsScreen(
-                      viewModel: viewModel,
+                      onOpenBikes: (station) => _openBikes(context, station),
                       onBookBike: (slot) => _openBooking(context, slot),
                     ),
-                    PassSelectionScreen(viewModel: viewModel),
+                    const PassSelectionScreen(),
+                    const HistoryScreen(),
                   ],
                 ),
               ),
@@ -105,7 +112,7 @@ class AppShellScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: viewModel.currentTabIndex,
+        selectedIndex: appState.currentTabIndex,
         onDestinationSelected: viewModel.changeTab,
         destinations: const [
           NavigationDestination(
@@ -118,6 +125,11 @@ class AppShellScreen extends StatelessWidget {
             selectedIcon: Icon(Icons.confirmation_num_rounded),
             label: 'Passes',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.history_outlined),
+            selectedIcon: Icon(Icons.history_rounded),
+            label: 'History',
+          ),
         ],
       ),
     );
@@ -125,40 +137,57 @@ class AppShellScreen extends StatelessWidget {
 
   Future<void> _openBooking(BuildContext context, BikeSlot slot) async {
     final booked = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => BookingScreen(viewModel: viewModel, slot: slot),
-      ),
+      MaterialPageRoute<bool>(builder: (_) => BookingScreen(slot: slot)),
     );
 
     if (booked == true && context.mounted) {
+      final viewModel = context.read<RideAppViewModel>();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bike booked at ${viewModel.selectedStation?.name}.'),
+          content: Text(
+            'Bike booked at ${viewModel.state.selectedStation?.name}.',
+          ),
         ),
       );
     }
   }
+
+  Future<void> _openBikes(BuildContext context, BikeStation station) async {
+    final viewModel = context.read<RideAppViewModel>();
+    viewModel.selectStation(station.id);
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            BikesScreen(onBookBike: (slot) => _openBooking(context, slot)),
+      ),
+    );
+  }
 }
 
-_HeaderContent _headerForTab(int index, RideAppViewModel viewModel) {
+AppShellHeader buildAppShellHeader(int index, RideAppState appState) {
   switch (index) {
     case 0:
-      return _HeaderContent(
+      return AppShellHeader(
         title: 'Stations',
-        subtitle: '${viewModel.totalAvailableBikes} bikes available nearby',
+        subtitle: '${appState.totalAvailableBikes} bikes available nearby',
       );
     case 1:
-      return _HeaderContent(title: 'Passes', subtitle: viewModel.accessLabel);
+      return AppShellHeader(title: 'Passes', subtitle: appState.accessLabel);
+    case 2:
+      return AppShellHeader(
+        title: 'History',
+        subtitle: '${appState.bookingHistory.length} bookings saved',
+      );
     default:
-      return const _HeaderContent(
+      return const AppShellHeader(
         title: 'RideFlow',
         subtitle: 'Bike rental mobile app',
       );
   }
 }
 
-class _HeaderContent {
-  const _HeaderContent({required this.title, required this.subtitle});
+class AppShellHeader {
+  const AppShellHeader({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;

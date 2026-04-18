@@ -1,5 +1,5 @@
 import '../../models/bike_station.dart';
-import '../firebase/ride_database_schema.dart';
+import '../api/ride_api_schema.dart';
 import 'bike_slot_dto.dart';
 
 class BikeStationDto {
@@ -20,7 +20,7 @@ class BikeStationDto {
   final List<BikeSlotDto> slots;
 
   factory BikeStationDto.fromMap(String id, Map<Object?, Object?> map) {
-    final rawSlots = map[RideDatabaseSchema.stationSlots];
+    final rawSlots = map[RideApiSchema.stationSlots];
     final slots = <BikeSlotDto>[];
 
     if (rawSlots is Map) {
@@ -41,10 +41,10 @@ class BikeStationDto {
 
     return BikeStationDto(
       id: id,
-      name: (map[RideDatabaseSchema.stationName] ?? '').toString(),
-      address: (map[RideDatabaseSchema.stationAddress] ?? '').toString(),
-      mapX: _toDouble(map[RideDatabaseSchema.stationMapX]),
-      mapY: _toDouble(map[RideDatabaseSchema.stationMapY]),
+      name: (map[RideApiSchema.stationName] ?? '').toString(),
+      address: (map[RideApiSchema.stationAddress] ?? '').toString(),
+      mapX: toDoubleValue(map[RideApiSchema.stationMapX]),
+      mapY: toDoubleValue(map[RideApiSchema.stationMapY]),
       slots: slots,
     );
   }
@@ -74,18 +74,18 @@ class BikeStationDto {
   Map<String, Object?> toMap() {
     return {
       'id': id,
-      RideDatabaseSchema.stationName: name,
-      RideDatabaseSchema.stationAddress: address,
-      RideDatabaseSchema.stationMapX: mapX,
-      RideDatabaseSchema.stationMapY: mapY,
-      RideDatabaseSchema.stationSlots: {
+      RideApiSchema.stationName: name,
+      RideApiSchema.stationAddress: address,
+      RideApiSchema.stationMapX: mapX,
+      RideApiSchema.stationMapY: mapY,
+      RideApiSchema.stationSlots: {
         for (final slot in slots) slot.id: slot.toMap(),
       },
     };
   }
 }
 
-double _toDouble(Object? value) {
+double toDoubleValue(Object? value) {
   if (value is num) {
     return value.toDouble();
   }

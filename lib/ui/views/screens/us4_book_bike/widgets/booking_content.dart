@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../widgets/section_card.dart';
-import 'booking_flow_shared.dart';
 import '../view_model/booking_view_model.dart';
 
 class BookingContent extends StatelessWidget {
@@ -22,16 +21,11 @@ class BookingContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final bookingState = viewModel.state;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
       children: [
-        const BookingFlowStepHeader(
-          step: 'Step 1',
-          title: 'Access',
-          description: 'Choose how this reservation will be unlocked.',
-        ),
-        const SizedBox(height: 18),
         SectionCard(
           backgroundColor: const Color(0xFFFCFAF7),
           borderSide: const BorderSide(color: Color(0xFFE8DED4)),
@@ -46,7 +40,7 @@ class BookingContent extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Check the pickup details before you continue.',
+                'Check the pickup details.',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: const Color(0xFF655E58),
                 ),
@@ -206,8 +200,8 @@ class BookingContent extends StatelessWidget {
                     Expanded(
                       child: Text(
                         viewModel.canConfirm
-                            ? 'Access is active. You can finish the reservation now.'
-                            : 'Select a single ticket or a pass before moving on.',
+                            ? 'Access is active.'
+                            : 'Select a ticket or pass to continue.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF5D5650),
                         ),
@@ -219,33 +213,33 @@ class BookingContent extends StatelessWidget {
               const SizedBox(height: 18),
               if (!viewModel.canConfirm) ...[
                 FilledButton(
-                  onPressed: viewModel.isBusy ? null : onBuyTicket,
+                  onPressed: bookingState.isBusy ? null : onBuyTicket,
                   child: const Text('Buy single ticket'),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton(
-                  onPressed: viewModel.isBusy ? null : onBuyPass,
+                  onPressed: bookingState.isBusy ? null : onBuyPass,
                   child: const Text('Choose a pass'),
                 ),
               ] else ...[
                 FilledButton(
-                  onPressed: viewModel.isBusy ? null : onConfirm,
+                  onPressed: bookingState.isBusy ? null : onConfirm,
                   child: Text(
-                    viewModel.isConfirming
+                    bookingState.isConfirming
                         ? 'Finishing reservation...'
                         : 'Finish reservation',
                   ),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton(
-                  onPressed: viewModel.isBusy ? null : onBuyPass,
+                  onPressed: bookingState.isBusy ? null : onBuyPass,
                   child: const Text('Change pass'),
                 ),
               ],
             ],
           ),
         ),
-        if (viewModel.actionError != null) ...[
+        if (bookingState.actionError != null) ...[
           const SizedBox(height: 18),
           Container(
             padding: const EdgeInsets.all(14),
@@ -263,7 +257,7 @@ class BookingContent extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    viewModel.actionError!,
+                    bookingState.actionError!,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFA34820),
                     ),

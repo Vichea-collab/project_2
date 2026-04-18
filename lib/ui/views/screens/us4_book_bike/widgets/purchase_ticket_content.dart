@@ -19,17 +19,12 @@ class PurchaseTicketContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final bookingState = viewModel.state;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: Column(
         children: [
-          const BookingFlowStepHeader(
-            step: 'Step 2',
-            title: 'Single ticket',
-            description: 'Pay for one ride to unlock this reservation.',
-          ),
-          const SizedBox(height: 18),
           Expanded(
             child: SectionCard(
               backgroundColor: const Color(0xFFFCFAF7),
@@ -46,7 +41,7 @@ class PurchaseTicketContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'This ticket covers one reservation for ${viewModel.stationName}, slot ${viewModel.slotLabel}.',
+                    'For ${viewModel.stationName}, slot ${viewModel.slotLabel}.',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: const Color(0xFF655E58),
                     ),
@@ -111,7 +106,7 @@ class PurchaseTicketContent extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'After payment, the app will finish the reservation and move you to the success screen.',
+                            'Payment will complete this reservation.',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: const Color(0xFF5F5751),
                             ),
@@ -120,10 +115,10 @@ class PurchaseTicketContent extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (viewModel.actionError != null) ...[
+                  if (bookingState.actionError != null) ...[
                     const SizedBox(height: 16),
                     Text(
-                      viewModel.actionError!,
+                      bookingState.actionError!,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: const Color(0xFFD05C2A),
                       ),
@@ -135,14 +130,14 @@ class PurchaseTicketContent extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           FilledButton(
-            onPressed: viewModel.isBusy ? null : onPay,
+            onPressed: bookingState.isBusy ? null : onPay,
             child: Text(
-              viewModel.isPurchasingTicket ? 'Processing...' : 'Pay \$2.00',
+              bookingState.isPurchasingTicket ? 'Processing...' : 'Pay \$2.00',
             ),
           ),
           const SizedBox(height: 10),
           OutlinedButton(
-            onPressed: viewModel.isBusy ? null : onCancel,
+            onPressed: bookingState.isBusy ? null : onCancel,
             child: const Text('Back'),
           ),
         ],
