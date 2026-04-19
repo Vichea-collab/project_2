@@ -18,11 +18,11 @@ class BookingSuccessScreen extends StatelessWidget {
         child: BookingSuccessContent(
           viewModel: viewModel,
           onOpenStations: () {
-            viewModel.appViewModel.changeTab(0);
+            viewModel.openStationsTab();
             Navigator.of(context).pop(true);
           },
           onOpenPasses: () {
-            viewModel.appViewModel.changeTab(1);
+            viewModel.openPassesTab();
             Navigator.of(context).pop(true);
           },
         ),

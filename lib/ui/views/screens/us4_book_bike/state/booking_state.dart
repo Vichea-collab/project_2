@@ -1,29 +1,30 @@
+import '../../../../utils/async_value.dart';
+
 class BookingState {
   const BookingState({
-    this.isConfirming = false,
-    this.isPurchasingTicket = false,
-    this.actionError,
+    this.confirmValue = const AsyncValue.success(null),
+    this.purchaseTicketValue = const AsyncValue.success(null),
   });
 
-  final bool isConfirming;
-  final bool isPurchasingTicket;
-  final String? actionError;
+  final AsyncValue<void> confirmValue;
+  final AsyncValue<void> purchaseTicketValue;
 
+  bool get isConfirming => confirmValue.isLoading;
+  bool get isPurchasingTicket => purchaseTicketValue.isLoading;
   bool get isBusy => isConfirming || isPurchasingTicket;
+  String? get actionError => confirmValue.hasError
+      ? confirmValue.errorMessage
+      : (purchaseTicketValue.hasError
+            ? purchaseTicketValue.errorMessage
+            : null);
 
   BookingState copyWith({
-    bool? isConfirming,
-    bool? isPurchasingTicket,
-    Object? actionError = _sentinel,
+    AsyncValue<void>? confirmValue,
+    AsyncValue<void>? purchaseTicketValue,
   }) {
     return BookingState(
-      isConfirming: isConfirming ?? this.isConfirming,
-      isPurchasingTicket: isPurchasingTicket ?? this.isPurchasingTicket,
-      actionError: identical(actionError, _sentinel)
-          ? this.actionError
-          : actionError as String?,
+      confirmValue: confirmValue ?? this.confirmValue,
+      purchaseTicketValue: purchaseTicketValue ?? this.purchaseTicketValue,
     );
   }
 }
-
-const _sentinel = Object();

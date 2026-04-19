@@ -35,12 +35,7 @@ class AppUserDto {
   factory AppUserDto.fromMap(String id, Map<Object?, Object?> source) {
     final rawActivePass = source['activePass'];
     final rawBookingHistory = source['bookingHistory'];
-    final rawCurrentBooking = source['currentBooking'];
-
-    final bookingHistory = _parseBookingHistory(
-      rawBookingHistory,
-      rawCurrentBooking,
-    );
+    final bookingHistory = _parseBookingHistory(rawBookingHistory);
 
     return AppUserDto(
       id: id,
@@ -78,7 +73,6 @@ class AppUserDto {
 
   static List<CurrentBookingDto> _parseBookingHistory(
     Object? rawBookingHistory,
-    Object? rawCurrentBooking,
   ) {
     final history = <CurrentBookingDto>[];
 
@@ -98,14 +92,6 @@ class AppUserDto {
           );
         }
       }
-    }
-
-    if (history.isEmpty && rawCurrentBooking is Map) {
-      history.add(
-        CurrentBookingDto.fromMap(
-          Map<Object?, Object?>.from(rawCurrentBooking),
-        ),
-      );
     }
 
     history.sort((a, b) => b.bookedAtIso.compareTo(a.bookedAtIso));

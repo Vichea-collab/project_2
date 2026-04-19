@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../../../models/app_user.dart';
 import '../../../../viewmodels/ride_app_view_model.dart';
 import '../../../../../models/pass_type.dart';
+import '../../../../../models/ride_pass.dart';
+import '../../../../utils/date_time_utils.dart';
 
 class PassSelectionViewModel extends ChangeNotifier {
   PassSelectionViewModel({
@@ -14,7 +17,6 @@ class PassSelectionViewModel extends ChangeNotifier {
   final RideAppViewModel _appViewModel;
   final bool selectionMode;
 
-  RideAppViewModel get appViewModel => _appViewModel;
   List<PassType> get passTypes => _appViewModel.state.passTypes;
   PassType? get activePassType => _appViewModel.state.activePass?.type;
   bool get hasActivePass => _appViewModel.state.activePass != null;
@@ -24,7 +26,7 @@ class PassSelectionViewModel extends ChangeNotifier {
     if (activePass == null) {
       return null;
     }
-    return _formatDate(activePass.expirationDate);
+    return formatDateLong(activePass.expirationDate);
   }
 
   String get heroTitle =>
@@ -39,16 +41,52 @@ class PassSelectionViewModel extends ChangeNotifier {
     }
 
     return selectionMode
-        ? '${activePass.type.title} is active until ${_formatDate(activePass.expirationDate)}. You can keep it or replace it for this booking.'
-        : '${activePass.type.title} is active until ${_formatDate(activePass.expirationDate)}.';
+        ? '${activePass.type.title} is active until ${formatDateLong(activePass.expirationDate)}. You can keep it or replace it for this booking.'
+        : '${activePass.type.title} is active until ${formatDateLong(activePass.expirationDate)}.';
   }
 
   Future<bool> activatePass(PassType passType) {
-    return _appViewModel.activatePass(passType);
+    final currentUser = _appViewModel.state.currentUser;
+    if (currentUser == null) {
+      return Future<bool>.value(false);
+    }
+    return _activatePass(currentUser, passType);
   }
 
   Future<bool> cancelActivePass() {
-    return _appViewModel.cancelActivePass();
+    final currentUser = _appViewModel.state.currentUser;
+    if (currentUser == null) {
+      return Future<bool>.value(false);
+    }
+    return _cancelPass(currentUser);
+  }
+
+  Future<bool> _activatePass(AppUser currentUser, PassType passType) async {
+    try {
+      final nextPass = RidePass(type: passType, purchasedAt: DateTime.now());
+      final updatedUser = currentUser.copyWith(
+        activePass: nextPass,
+        hasSingleTicket: false,
+      );
+      await _appViewModel.repository.saveCurrentUser(updatedUser);
+      _appViewModel.replaceCurrentUser(updatedUser, errorMessage: null);
+      return true;
+    } catch (_) {
+      _appViewModel.setErrorMessage('Unable to activate the selected pass.');
+      return false;
+    }
+  }
+
+  Future<bool> _cancelPass(AppUser currentUser) async {
+    try {
+      final updatedUser = currentUser.copyWith(activePass: null);
+      await _appViewModel.repository.saveCurrentUser(updatedUser);
+      _appViewModel.replaceCurrentUser(updatedUser, errorMessage: null);
+      return true;
+    } catch (_) {
+      _appViewModel.setErrorMessage('Unable to cancel the active pass.');
+      return false;
+    }
   }
 
   void _handleAppStateChanged() {
@@ -60,23 +98,4 @@ class PassSelectionViewModel extends ChangeNotifier {
     _appViewModel.removeListener(_handleAppStateChanged);
     super.dispose();
   }
-}
-
-String _formatDate(DateTime date) {
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
-  return '${months[date.month - 1]} ${date.day}, ${date.year}';
 }

@@ -3,10 +3,6 @@ import 'package:flutter/foundation.dart';
 import '../../data/repositories/ride_repository.dart';
 import '../../models/app_user.dart';
 import '../../models/bike_station.dart';
-import '../../models/bike_slot.dart';
-import '../../models/current_booking.dart';
-import '../../models/pass_type.dart';
-import '../../models/ride_pass.dart';
 import '../state/ride_app_state.dart';
 
 class RideAppViewModel extends ChangeNotifier {
@@ -16,6 +12,7 @@ class RideAppViewModel extends ChangeNotifier {
   final RideRepository _repository;
   RideAppState _state = const RideAppState();
 
+  RideRepository get repository => _repository;
   RideAppState get state => _state;
 
   Future<void> initialize() async {
@@ -59,79 +56,22 @@ class RideAppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> activatePass(PassType type) async {
-    final currentUser = _state.currentUser;
-    if (currentUser == null) {
-      return false;
-    }
-
-    try {
-      final nextPass = RidePass(type: type, purchasedAt: DateTime.now());
-      final updatedUser = currentUser.copyWith(
-        activePass: nextPass,
-        hasSingleTicket: false,
-      );
-      _setState(_state.copyWith(errorMessage: null, currentUser: updatedUser));
-      await _repository.saveCurrentUser(updatedUser);
-      notifyListeners();
-      return true;
-    } catch (_) {
-      _setState(
-        _state.copyWith(errorMessage: 'Unable to activate the selected pass.'),
-      );
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> cancelActivePass() async {
-    final currentUser = _state.currentUser;
-    if (currentUser == null) {
-      return false;
-    }
-
-    try {
-      final updatedUser = currentUser.copyWith(activePass: null);
-      _setState(_state.copyWith(errorMessage: null, currentUser: updatedUser));
-      await _repository.saveCurrentUser(updatedUser);
-      notifyListeners();
-      return true;
-    } catch (_) {
-      _setState(
-        _state.copyWith(errorMessage: 'Unable to cancel the active pass.'),
-      );
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> purchaseSingleTicket() async {
-    final currentUser = _state.currentUser;
-    if (currentUser == null) {
-      return false;
-    }
-
-    try {
-      final updatedUser = currentUser.copyWith(hasSingleTicket: true);
-      _setState(_state.copyWith(errorMessage: null, currentUser: updatedUser));
-      await _repository.saveCurrentUser(updatedUser);
-      notifyListeners();
-      return true;
-    } catch (_) {
-      _setState(
-        _state.copyWith(errorMessage: 'Unable to purchase a single ticket.'),
-      );
-      notifyListeners();
-      return false;
-    }
-  }
-
   void selectStation(String stationId) {
+    BikeStation? selectedStation;
+    for (final station in _state.stations) {
+      if (station.id == stationId) {
+        selectedStation = station;
+        break;
+      }
+    }
+
+    if (selectedStation == null) {
+      return;
+    }
+
     _setState(
       _state.copyWith(
-        selectedStation: _state.stations.firstWhere(
-          (station) => station.id == stationId,
-        ),
+        selectedStation: selectedStation,
       ),
     );
     notifyListeners();
@@ -142,59 +82,19 @@ class RideAppViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> confirmBooking(BikeSlot slot) async {
-    final station = _state.selectedStation;
-    if (station == null) {
-      return false;
-    }
-
-    if (!_state.hasActivePass && !_state.hasSingleTicket) {
-      return false;
-    }
-
-    final currentUser = _state.currentUser;
-    if (currentUser == null) {
-      return false;
-    }
-
-    try {
-      _setState(_state.copyWith(errorMessage: null));
-      await _repository.bookBike(stationId: station.id, slotId: slot.id);
-      final updatedUser = updatedUserAfterBooking(
-        currentUser: currentUser,
-        station: station,
-        slot: slot,
-      );
-      await _repository.saveCurrentUser(updatedUser);
-      final refreshedStations = await _repository.fetchStations();
-      applyStations(refreshedStations, updatedUser: updatedUser);
-      return true;
-    } catch (_) {
-      _setState(
-        _state.copyWith(errorMessage: 'Unable to confirm the booking.'),
-      );
-      notifyListeners();
-      return false;
-    }
+  void replaceCurrentUser(AppUser? user, {String? errorMessage}) {
+    _setState(
+      _state.copyWith(
+        currentUser: user,
+        errorMessage: errorMessage,
+      ),
+    );
+    notifyListeners();
   }
 
-  AppUser updatedUserAfterBooking({
-    required AppUser currentUser,
-    required BikeStation station,
-    required BikeSlot slot,
-  }) {
-    final booking = CurrentBooking(
-      stationName: station.name,
-      slotLabel: slot.label,
-      bookedAt: DateTime.now(),
-    );
-
-    return currentUser.copyWith(
-      hasSingleTicket: _state.hasActivePass
-          ? currentUser.hasSingleTicket
-          : false,
-      bookingHistory: [booking, ...currentUser.bookingHistory],
-    );
+  void setErrorMessage(String? errorMessage) {
+    _setState(_state.copyWith(errorMessage: errorMessage));
+    notifyListeners();
   }
 
   void applyStations(

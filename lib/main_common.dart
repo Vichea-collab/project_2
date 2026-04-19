@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'core/theme/app_theme.dart';
 import 'data/repositories/ride_repository.dart';
+import 'ui/theme/app_theme.dart';
 import 'ui/viewmodels/ride_app_view_model.dart';
 import 'ui/views/screens/app_shell_screen.dart';
 
