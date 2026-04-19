@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../models/bike_slot.dart';
 import '../../../../../models/bike_station.dart';
 import '../view_model/stations_view_model.dart';
 import 'station_map_panel.dart';
@@ -10,12 +9,10 @@ class StationsContent extends StatelessWidget {
     super.key,
     required this.viewModel,
     required this.onOpenBikes,
-    required this.onBookBike,
   });
 
   final StationsViewModel viewModel;
   final ValueChanged<BikeStation> onOpenBikes;
-  final ValueChanged<BikeSlot> onBookBike;
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +23,53 @@ class StationsContent extends StatelessWidget {
       children: [
         Positioned.fill(
           child: StationMapPanel(
-            stations: viewModel.stations,
+            stations: viewModel.filteredStations,
             selectedStationId: station?.id,
             onSelect: viewModel.selectStation,
             accessLabel: viewModel.hasActivePass ? 'Pass active' : 'Buy ticket',
+            searchController: viewModel.searchController,
+            onSearchChanged: viewModel.updateSearchQuery,
+            onClearSearch: viewModel.clearSearch,
             fullScreen: true,
             showSelectedStationCard: false,
           ),
         ),
+        if (viewModel.hasSearchQuery &&
+            viewModel.filteredStations.isEmpty &&
+            station == null)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 24,
+                    offset: const Offset(0, 12),
+                    color: Colors.black.withValues(alpha: 0.10),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.search_off_rounded,
+                    color: Color(0xFFE46F2A),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'No stations match "${viewModel.searchQuery}".',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         if (station != null)
           Align(
             alignment: Alignment.bottomCenter,
@@ -129,14 +165,14 @@ class StationsContent extends StatelessWidget {
                                 label: '${station.availableBikes} bikes ready',
                               ),
                               _StationBadge(
-                                label: '${station.totalSlots} total slots',
+                                label:
+                                    '${station.totalSlots} total slots',
                               ),
-                              _StationBadge(label: viewModel.accessLabel),
                             ],
                           ),
                           const Spacer(),
                           Text(
-                            'See all bikes on a dedicated station details screen.',
+                            'Open the bike list to choose a slot and continue booking.',
                             style: theme.textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 14),

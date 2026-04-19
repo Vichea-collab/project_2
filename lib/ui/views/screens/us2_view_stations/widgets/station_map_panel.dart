@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 
 import '../../../../../models/bike_station.dart';
 
-class StationMapPanel extends StatelessWidget {
+class StationMapPanel extends StatefulWidget {
   const StationMapPanel({
     super.key,
     required this.stations,
     required this.selectedStationId,
     required this.onSelect,
+    required this.searchController,
+    required this.onSearchChanged,
+    required this.onClearSearch,
     this.accessLabel,
     this.fullScreen = false,
     this.showSelectedStationCard = true,
@@ -18,18 +21,55 @@ class StationMapPanel extends StatelessWidget {
   final List<BikeStation> stations;
   final String? selectedStationId;
   final ValueChanged<String> onSelect;
+  final TextEditingController searchController;
+  final ValueChanged<String> onSearchChanged;
+  final VoidCallback onClearSearch;
   final String? accessLabel;
   final bool fullScreen;
   final bool showSelectedStationCard;
+
+  @override
+  State<StationMapPanel> createState() => _StationMapPanelState();
+}
+
+class _StationMapPanelState extends State<StationMapPanel> {
+  late final TransformationController _transformationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _transformationController = TransformationController();
+  }
+
+  @override
+  void dispose() {
+    _transformationController.dispose();
+    super.dispose();
+  }
+
+  void _zoom(double factor) {
+    final currentMatrix = _transformationController.value.clone();
+    final currentScale = currentMatrix.getMaxScaleOnAxis();
+    final targetScale = (currentScale * factor).clamp(1.0, 2.4);
+    final normalizedFactor = targetScale / currentScale;
+    currentMatrix.multiply(
+      Matrix4.diagonal3Values(normalizedFactor, normalizedFactor, 1),
+    );
+    _transformationController.value = currentMatrix;
+  }
+
+  void _resetView() {
+    _transformationController.value = Matrix4.identity();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     BikeStation? selectedStation;
 
-    if (selectedStationId != null) {
-      for (final station in stations) {
-        if (station.id == selectedStationId) {
+    if (widget.selectedStationId != null) {
+      for (final station in widget.stations) {
+        if (station.id == widget.selectedStationId) {
           selectedStation = station;
           break;
         }
@@ -39,8 +79,8 @@ class StationMapPanel extends StatelessWidget {
     final map = Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(fullScreen ? 0 : 30),
-        boxShadow: fullScreen
+        borderRadius: BorderRadius.circular(widget.fullScreen ? 0 : 30),
+        boxShadow: widget.fullScreen
             ? null
             : [
                 BoxShadow(
@@ -51,33 +91,66 @@ class StationMapPanel extends StatelessWidget {
               ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(fullScreen ? 0 : 14),
+        padding: EdgeInsets.all(widget.fullScreen ? 0 : 14),
         child: LayoutBuilder(
           builder: (context, constraints) {
+            final reservedBottomSpace = widget.showSelectedStationCard ? 150.0 : 70.0;
+            final mapWidth = math.max(constraints.maxWidth * 1.45, constraints.maxWidth + 220);
+            final mapHeight = math.max(
+              constraints.maxHeight * 1.28,
+              constraints.maxHeight + reservedBottomSpace,
+            );
+
             return Stack(
               children: [
                 Positioned.fill(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(fullScreen ? 0 : 24),
-                    child: Container(
-                      color: const Color(0xFFF3F2F0),
-                      child: CustomPaint(
-                        size: constraints.biggest,
-                        painter: _MapBackdropPainter(),
+                    borderRadius: BorderRadius.circular(widget.fullScreen ? 0 : 24),
+                    child: InteractiveViewer(
+                      transformationController: _transformationController,
+                      boundaryMargin: const EdgeInsets.all(180),
+                      constrained: false,
+                      minScale: 1,
+                      maxScale: 2.4,
+                      child: SizedBox(
+                        width: mapWidth,
+                        height: mapHeight,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Container(
+                                color: const Color(0xFFF3F2F0),
+                                child: CustomPaint(
+                                  size: Size(mapWidth, mapHeight),
+                                  painter: _MapBackdropPainter(),
+                                ),
+                              ),
+                            ),
+                            for (final station in widget.stations)
+                              Positioned(
+                                left: station.mapX * (mapWidth - 72),
+                                top: station.mapY * (mapHeight - reservedBottomSpace),
+                                child: _StationMarker(
+                                  station: station,
+                                  isSelected: widget.selectedStationId == station.id,
+                                  onTap: () => widget.onSelect(station.id),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
                 Positioned(
-                  top: fullScreen ? 14 : 8,
-                  left: fullScreen ? 14 : 8,
-                  right: fullScreen ? 14 : 8,
+                  top: widget.fullScreen ? 14 : 8,
+                  left: widget.fullScreen ? 14 : 8,
+                  right: widget.fullScreen ? 14 : 8,
                   child: Row(
                     children: [
                       Expanded(
                         child: Container(
                           height: 46,
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
@@ -89,20 +162,34 @@ class StationMapPanel extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: Row(
-                            children: [
-                              const Icon(
+                          child: TextField(
+                            controller: widget.searchController,
+                            onChanged: widget.onSearchChanged,
+                            textInputAction: TextInputAction.search,
+                            decoration: InputDecoration(
+                              hintText: 'Search nearby stations',
+                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                color: const Color(0xFF8A817B),
+                              ),
+                              prefixIcon: const Icon(
                                 Icons.search_rounded,
                                 color: Color(0xFF8A817B),
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Search nearby stations',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: const Color(0xFF8A817B),
-                                ),
+                              suffixIcon: widget.searchController.text.isEmpty
+                                  ? null
+                                  : IconButton(
+                                      onPressed: widget.onClearSearch,
+                                      icon: const Icon(
+                                        Icons.close_rounded,
+                                        color: Color(0xFF8A817B),
+                                      ),
+                                    ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 11,
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
@@ -112,54 +199,23 @@ class StationMapPanel extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: fullScreen ? 68 : 62,
-                  left: fullScreen ? 14 : 8,
-                  right: fullScreen ? 62 : 56,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        const _FilterChip(label: 'All', isSelected: true),
-                        const SizedBox(width: 8),
-                        const _FilterChip(label: 'Bikes'),
-                        const SizedBox(width: 8),
-                        const _FilterChip(label: 'Pass holders'),
-                        if (accessLabel != null) ...[
-                          const SizedBox(width: 8),
-                          _FilterChip(label: accessLabel!),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-                for (final station in stations)
-                  Positioned(
-                    left: station.mapX * (constraints.maxWidth - 72),
-                    top:
-                        station.mapY *
-                        (constraints.maxHeight -
-                            (showSelectedStationCard ? 170 : 90)),
-                    child: _StationMarker(
-                      station: station,
-                      isSelected: selectedStationId == station.id,
-                      onTap: () => onSelect(station.id),
-                    ),
-                  ),
-                Positioned(
-                  right: fullScreen ? 14 : 10,
-                  bottom: showSelectedStationCard ? 112 : 24,
+                  right: widget.fullScreen ? 14 : 10,
+                  bottom: widget.showSelectedStationCard ? 112 : 24,
                   child: Column(
                     children: [
-                      _MapControlButton(icon: Icons.add_rounded, onTap: () {}),
+                      _MapControlButton(
+                        icon: Icons.add_rounded,
+                        onTap: () => _zoom(1.18),
+                      ),
                       const SizedBox(height: 10),
                       _MapControlButton(
                         icon: Icons.my_location_rounded,
-                        onTap: () {},
+                        onTap: _resetView,
                       ),
                     ],
                   ),
                 ),
-                if (selectedStation != null && showSelectedStationCard)
+                if (selectedStation != null && widget.showSelectedStationCard)
                   Positioned(
                     left: 8,
                     right: 8,
@@ -211,12 +267,12 @@ class StationMapPanel extends StatelessWidget {
                                   children: [
                                     _StatBadge(
                                       label:
-                                          '${selectedStation.availableBikes} bikes',
+                                          '${selectedStation.availableBikes} bikes ready',
                                     ),
                                     const SizedBox(width: 8),
                                     _StatBadge(
                                       label:
-                                          '${selectedStation.totalSlots} slots',
+                                          '${selectedStation.totalSlots} total slots',
                                     ),
                                   ],
                                 ),
@@ -234,7 +290,7 @@ class StationMapPanel extends StatelessWidget {
       ),
     );
 
-    if (fullScreen) {
+    if (widget.fullScreen) {
       return map;
     }
 
@@ -422,39 +478,6 @@ class _MapBackdropPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, this.isSelected = false});
-
-  final String label;
-  final bool isSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFE46F2A) : Colors.white,
-        borderRadius: BorderRadius.circular(999),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-            color: Colors.black.withValues(alpha: 0.04),
-          ),
-        ],
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.white : const Color(0xFF5F5853),
-          fontWeight: FontWeight.w700,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
 }
 
 class _MapControlButton extends StatelessWidget {

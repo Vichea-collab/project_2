@@ -106,7 +106,7 @@ class PurchaseTicketContent extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Payment will complete this reservation.',
+                            'Payment unlocks this booking. You will confirm the bike on the previous screen.',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: const Color(0xFF5F5751),
                             ),

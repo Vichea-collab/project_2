@@ -33,7 +33,7 @@ class BookingContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Reservation summary',
+                'Booking Bike',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -87,23 +87,6 @@ class BookingContent extends StatelessWidget {
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEAF4EC),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        'Available',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: const Color(0xFF2F6A46),
-                          fontWeight: FontWeight.w800,
-                        ),
                       ),
                     ),
                   ],
@@ -230,11 +213,13 @@ class BookingContent extends StatelessWidget {
                         : 'Finish reservation',
                   ),
                 ),
-                const SizedBox(height: 10),
-                OutlinedButton(
-                  onPressed: bookingState.isBusy ? null : onBuyPass,
-                  child: const Text('Change pass'),
-                ),
+                if (viewModel.hasActivePass) ...[
+                  const SizedBox(height: 10),
+                  OutlinedButton(
+                    onPressed: bookingState.isBusy ? null : onBuyPass,
+                    child: const Text('Change pass'),
+                  ),
+                ],
               ],
             ],
           ),

@@ -8,13 +8,13 @@ class BookingSuccessContent extends StatelessWidget {
   const BookingSuccessContent({
     super.key,
     required this.viewModel,
+    required this.onOpenHistory,
     required this.onOpenStations,
-    required this.onOpenPasses,
   });
 
   final BookingViewModel viewModel;
+  final VoidCallback onOpenHistory;
   final VoidCallback onOpenStations;
-  final VoidCallback onOpenPasses;
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +96,13 @@ class BookingSuccessContent extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               FilledButton(
-                onPressed: onOpenStations,
-                child: const Text('Back to stations'),
+                onPressed: onOpenHistory,
+                child: const Text('View history'),
               ),
               const SizedBox(height: 10),
               OutlinedButton(
-                onPressed: onOpenPasses,
-                child: const Text('View passes'),
+                onPressed: onOpenStations,
+                child: const Text('Go to stations'),
               ),
             ],
           ),

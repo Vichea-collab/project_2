@@ -100,7 +100,6 @@ class AppShellScreen extends StatelessWidget {
                   children: [
                     StationsScreen(
                       onOpenBikes: (station) => _openBikes(context, station),
-                      onBookBike: (slot) => _openBooking(context, slot),
                     ),
                     const PassSelectionScreen(),
                     const HistoryScreen(),

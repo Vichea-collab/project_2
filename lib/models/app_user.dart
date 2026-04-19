@@ -1,4 +1,4 @@
-import 'current_booking.dart';
+import 'booking_history_item.dart';
 import 'ride_pass.dart';
 
 class AppUser {
@@ -14,14 +14,14 @@ class AppUser {
   final String name;
   final RidePass? activePass;
   final bool hasSingleTicket;
-  final List<CurrentBooking> bookingHistory;
+  final List<BookingHistoryItem> bookingHistory;
 
   AppUser copyWith({
     String? id,
     String? name,
     Object? activePass = _sentinel,
     bool? hasSingleTicket,
-    List<CurrentBooking>? bookingHistory,
+    List<BookingHistoryItem>? bookingHistory,
   }) {
     return AppUser(
       id: id ?? this.id,

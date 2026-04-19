@@ -1,6 +1,6 @@
 import '../../models/app_user.dart';
-import '../../models/current_booking.dart';
-import 'current_booking_dto.dart';
+import '../../models/booking_history_item.dart';
+import 'booking_history_item_dto.dart';
 import 'ride_pass_dto.dart';
 
 class AppUserDto {
@@ -16,7 +16,7 @@ class AppUserDto {
   final String name;
   final RidePassDto? activePass;
   final bool hasSingleTicket;
-  final List<CurrentBookingDto> bookingHistory;
+  final List<BookingHistoryItemDto> bookingHistory;
 
   factory AppUserDto.fromDomain(AppUser user) {
     return AppUserDto(
@@ -27,7 +27,7 @@ class AppUserDto {
           : RidePassDto.fromDomain(user.activePass!),
       hasSingleTicket: user.hasSingleTicket,
       bookingHistory: user.bookingHistory
-          .map(CurrentBookingDto.fromDomain)
+          .map(BookingHistoryItemDto.fromDomain)
           .toList(),
     );
   }
@@ -55,7 +55,7 @@ class AppUserDto {
       activePass: activePass?.toDomain(),
       hasSingleTicket: hasSingleTicket,
       bookingHistory: bookingHistory
-          .map<CurrentBooking>((booking) => booking.toDomain())
+          .map<BookingHistoryItem>((booking) => booking.toDomain())
           .toList(),
     );
   }
@@ -71,16 +71,16 @@ class AppUserDto {
     };
   }
 
-  static List<CurrentBookingDto> _parseBookingHistory(
+  static List<BookingHistoryItemDto> _parseBookingHistory(
     Object? rawBookingHistory,
   ) {
-    final history = <CurrentBookingDto>[];
+    final history = <BookingHistoryItemDto>[];
 
     if (rawBookingHistory is List) {
       for (final item in rawBookingHistory) {
         if (item is Map) {
           history.add(
-            CurrentBookingDto.fromMap(Map<Object?, Object?>.from(item)),
+            BookingHistoryItemDto.fromMap(Map<Object?, Object?>.from(item)),
           );
         }
       }
@@ -88,7 +88,7 @@ class AppUserDto {
       for (final item in rawBookingHistory.values) {
         if (item is Map) {
           history.add(
-            CurrentBookingDto.fromMap(Map<Object?, Object?>.from(item)),
+            BookingHistoryItemDto.fromMap(Map<Object?, Object?>.from(item)),
           );
         }
       }

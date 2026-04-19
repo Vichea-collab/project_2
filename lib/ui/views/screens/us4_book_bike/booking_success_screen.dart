@@ -13,16 +13,16 @@ class BookingSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text('Step 3 of 3')),
+      appBar: AppBar(title: Text(viewModel.successStepLabel)),
       body: BookingFlowBackground(
         child: BookingSuccessContent(
           viewModel: viewModel,
-          onOpenStations: () {
-            viewModel.openStationsTab();
+          onOpenHistory: () {
+            viewModel.openHistoryTab();
             Navigator.of(context).pop(true);
           },
-          onOpenPasses: () {
-            viewModel.openPassesTab();
+          onOpenStations: () {
+            viewModel.openStationsTab();
             Navigator.of(context).pop(true);
           },
         ),

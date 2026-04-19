@@ -1,5 +1,5 @@
-class CurrentBooking {
-  const CurrentBooking({
+class BookingHistoryItem {
+  const BookingHistoryItem({
     required this.stationName,
     required this.slotLabel,
     required this.bookedAt,

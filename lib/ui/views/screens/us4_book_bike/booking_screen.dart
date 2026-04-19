@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../models/bike_slot.dart';
 import '../../../viewmodels/ride_app_view_model.dart';
-import '../us1_select_pass/pass_selection_screen.dart';
 import 'booking_success_screen.dart';
 import 'purchase_ticket_screen.dart';
 import 'view_model/booking_view_model.dart';
@@ -44,7 +43,7 @@ class _BookingScreenState extends State<BookingScreen> {
       builder: (context, _) {
         return Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(title: const Text('Step 1 of 3')),
+          appBar: AppBar(title: Text(_viewModel.bookingStepLabel)),
           body: BookingFlowBackground(
             child: BookingContent(
               viewModel: _viewModel,
@@ -71,27 +70,18 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    Navigator.of(context).pop(true);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   Future<void> _openPassSelection() async {
-    final result = await Navigator.of(context).push<Object?>(
-      MaterialPageRoute<void>(
-        builder: (_) => Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(title: const Text('Step 2 of 3')),
-          body: BookingFlowBackground(
-            child: PassSelectionScreen(selectionMode: true),
-          ),
-        ),
-      ),
-    );
+    _viewModel.clearActionError();
+    _viewModel.openPassesTab();
 
-    if (!mounted || result == null) {
+    if (!mounted) {
       return;
     }
 
-    await _confirmBooking();
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   Future<void> _confirmBooking() async {
@@ -113,13 +103,13 @@ class _BookingScreenState extends State<BookingScreen> {
       return;
     }
 
-    await Navigator.of(context).pushReplacement<bool, bool>(
+    final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute<bool>(
         builder: (_) => BookingSuccessScreen(viewModel: _viewModel),
       ),
     );
 
-    if (!mounted) {
+    if (!mounted || result != true) {
       return;
     }
 

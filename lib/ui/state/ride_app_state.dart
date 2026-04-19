@@ -1,6 +1,6 @@
 import '../../models/app_user.dart';
 import '../../models/bike_station.dart';
-import '../../models/current_booking.dart';
+import '../../models/booking_history_item.dart';
 import '../../models/pass_type.dart';
 import '../../models/ride_pass.dart';
 
@@ -27,7 +27,7 @@ class RideAppState {
 
   bool get hasSingleTicket => currentUser?.hasSingleTicket ?? false;
 
-  List<CurrentBooking> get bookingHistory =>
+  List<BookingHistoryItem> get bookingHistory =>
       currentUser?.bookingHistory ?? const [];
 
   int get totalAvailableBikes =>

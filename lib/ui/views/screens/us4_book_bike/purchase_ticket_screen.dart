@@ -17,7 +17,7 @@ class PurchaseTicketScreen extends StatelessWidget {
       builder: (context, _) {
         return Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(title: const Text('Step 2 of 3')),
+          appBar: AppBar(title: Text(viewModel.purchaseStepLabel)),
           body: BookingFlowBackground(
             child: PurchaseTicketContent(
               viewModel: viewModel,
@@ -60,23 +60,17 @@ class PurchaseTicketScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            bookingState.actionError ?? 'Unable to complete the booking.',
+            bookingState.actionError ?? 'Unable to confirm the booking.',
           ),
         ),
       );
       return;
     }
 
-    final result = await Navigator.of(context).pushReplacement<bool, bool>(
+    Navigator.of(context).pushReplacement<bool, bool>(
       MaterialPageRoute<bool>(
         builder: (_) => BookingSuccessScreen(viewModel: viewModel),
       ),
     );
-
-    if (!context.mounted) {
-      return;
-    }
-
-    Navigator.of(context).pop(result ?? true);
   }
 }

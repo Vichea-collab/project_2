@@ -60,7 +60,7 @@ class BikeSlotTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    slot.isAvailable ? 'Available bike' : 'No bike available',
+                    slot.label,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
@@ -80,17 +80,9 @@ class BikeSlotTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        slot.isAvailable ? 'Ready now' : 'Unavailable',
+                        slot.isAvailable ? 'Available' : 'Empty',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF6E655E),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        slot.label,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF9A8E84),
-                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -108,7 +100,7 @@ class BikeSlotTile extends StatelessWidget {
                     ? const Color(0xFFFF7E3F)
                     : const Color(0xFFCFC8C1),
               ),
-              child: Text(slot.isAvailable ? 'Book now' : 'Booked'),
+              child: Text(slot.isAvailable ? 'Book now' : 'Unavailable'),
             ),
           ],
         ),

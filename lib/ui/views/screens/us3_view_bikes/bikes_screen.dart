@@ -82,14 +82,8 @@ class BikesScreen extends StatelessWidget {
                             _MetaBadge(
                               icon: Icons.inventory_2_outlined,
                               value: '${station.totalSlots}',
-                              label: 'slots',
+                              label: 'total slots',
                               accent: const Color(0xFF8A817B),
-                            ),
-                            _MetaBadge(
-                              icon: Icons.confirmation_num_outlined,
-                              value: appState.hasActivePass ? 'Pass' : 'Ticket',
-                              label: 'access',
-                              accent: const Color(0xFF2F6A46),
                             ),
                           ],
                         ),

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import '../../models/current_booking.dart';
+import '../../models/booking_history_item.dart';
 
-class CurrentBookingDto {
-  const CurrentBookingDto({
+class BookingHistoryItemDto {
+  const BookingHistoryItemDto({
     required this.stationName,
     required this.slotLabel,
     required this.bookedAtIso,
@@ -13,33 +13,33 @@ class CurrentBookingDto {
   final String slotLabel;
   final String bookedAtIso;
 
-  factory CurrentBookingDto.fromDomain(CurrentBooking booking) {
-    return CurrentBookingDto(
+  factory BookingHistoryItemDto.fromDomain(BookingHistoryItem booking) {
+    return BookingHistoryItemDto(
       stationName: booking.stationName,
       slotLabel: booking.slotLabel,
       bookedAtIso: booking.bookedAt.toIso8601String(),
     );
   }
 
-  factory CurrentBookingDto.fromJsonString(String source) {
+  factory BookingHistoryItemDto.fromJsonString(String source) {
     final json = jsonDecode(source) as Map<String, dynamic>;
-    return CurrentBookingDto(
+    return BookingHistoryItemDto(
       stationName: (json['stationName'] ?? '').toString(),
       slotLabel: (json['slotLabel'] ?? '').toString(),
       bookedAtIso: (json['bookedAtIso'] ?? '').toString(),
     );
   }
 
-  factory CurrentBookingDto.fromMap(Map<Object?, Object?> source) {
-    return CurrentBookingDto(
+  factory BookingHistoryItemDto.fromMap(Map<Object?, Object?> source) {
+    return BookingHistoryItemDto(
       stationName: (source['stationName'] ?? '').toString(),
       slotLabel: (source['slotLabel'] ?? '').toString(),
       bookedAtIso: (source['bookedAtIso'] ?? '').toString(),
     );
   }
 
-  CurrentBooking toDomain() {
-    return CurrentBooking(
+  BookingHistoryItem toDomain() {
+    return BookingHistoryItem(
       stationName: stationName,
       slotLabel: slotLabel,
       bookedAt: DateTime.parse(bookedAtIso),

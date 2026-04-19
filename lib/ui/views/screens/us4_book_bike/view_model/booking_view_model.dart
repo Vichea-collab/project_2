@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../../models/app_user.dart';
 import '../../../../../models/bike_slot.dart';
-import '../../../../../models/current_booking.dart';
+import '../../../../../models/booking_history_item.dart';
 import '../../../../utils/date_time_utils.dart';
 import '../../../../viewmodels/ride_app_view_model.dart';
 import '../../../../utils/async_value.dart';
@@ -27,6 +27,9 @@ class BookingViewModel extends ChangeNotifier {
   bool get hasActivePass => _appViewModel.state.hasActivePass;
   bool get hasSingleTicket => _appViewModel.state.hasSingleTicket;
   bool get canConfirm => hasActivePass || hasSingleTicket;
+  String get bookingStepLabel => hasActivePass ? 'Step 1 of 2' : 'Step 1 of 3';
+  String get purchaseStepLabel => 'Step 2 of 3';
+  String get successStepLabel => hasActivePass ? 'Step 2 of 2' : 'Step 3 of 3';
 
   String get accessTitle {
     if (hasActivePass) {
@@ -150,7 +153,7 @@ class BookingViewModel extends ChangeNotifier {
     required AppUser currentUser,
     required String stationName,
   }) {
-    final booking = CurrentBooking(
+    final booking = BookingHistoryItem(
       stationName: stationName,
       slotLabel: slot.label,
       bookedAt: DateTime.now(),
@@ -168,6 +171,10 @@ class BookingViewModel extends ChangeNotifier {
 
   void openPassesTab() {
     _appViewModel.changeTab(1);
+  }
+
+  void openHistoryTab() {
+    _appViewModel.changeTab(2);
   }
 
   void _setState(BookingState nextState) {
