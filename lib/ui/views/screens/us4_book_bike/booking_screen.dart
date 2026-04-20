@@ -43,7 +43,9 @@ class _BookingScreenState extends State<BookingScreen> {
       builder: (context, _) {
         return Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(title: Text(_viewModel.bookingStepLabel)),
+          appBar: AppBar(
+            title: Text(_viewModel.hasActivePass ? 'Step 1 of 2' : 'Step 1 of 3'),
+          ),
           body: BookingFlowBackground(
             child: BookingContent(
               viewModel: _viewModel,
@@ -75,7 +77,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Future<void> _openPassSelection() async {
     _viewModel.clearActionError();
-    _viewModel.openPassesTab();
+    context.read<RideAppViewModel>().changeTab(1);
 
     if (!mounted) {
       return;
@@ -92,11 +94,10 @@ class _BookingScreenState extends State<BookingScreen> {
     }
 
     if (!success) {
-      final bookingState = _viewModel.state;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            bookingState.actionError ?? 'Unable to confirm the booking.',
+            _viewModel.actionError ?? 'Unable to confirm the booking.',
           ),
         ),
       );

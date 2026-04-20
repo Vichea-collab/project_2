@@ -68,8 +68,7 @@ class PassSelectionViewModel extends ChangeNotifier {
         activePass: nextPass,
         hasSingleTicket: false,
       );
-      await _appViewModel.repository.saveCurrentUser(updatedUser);
-      _appViewModel.replaceCurrentUser(updatedUser, errorMessage: null);
+      await _appViewModel.saveUser(updatedUser);
       return true;
     } catch (_) {
       _appViewModel.setErrorMessage('Unable to activate the selected pass.');
@@ -80,8 +79,7 @@ class PassSelectionViewModel extends ChangeNotifier {
   Future<bool> _cancelPass(AppUser currentUser) async {
     try {
       final updatedUser = currentUser.copyWith(activePass: null);
-      await _appViewModel.repository.saveCurrentUser(updatedUser);
-      _appViewModel.replaceCurrentUser(updatedUser, errorMessage: null);
+      await _appViewModel.saveUser(updatedUser);
       return true;
     } catch (_) {
       _appViewModel.setErrorMessage('Unable to cancel the active pass.');

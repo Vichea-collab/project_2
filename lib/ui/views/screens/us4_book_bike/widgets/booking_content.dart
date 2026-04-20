@@ -21,7 +21,6 @@ class BookingContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final bookingState = viewModel.state;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -74,7 +73,7 @@ class BookingContent extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            viewModel.bikeLabel,
+                            'Selected bike',
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w800,
                             ),
@@ -196,27 +195,25 @@ class BookingContent extends StatelessWidget {
               const SizedBox(height: 18),
               if (!viewModel.canConfirm) ...[
                 FilledButton(
-                  onPressed: bookingState.isBusy ? null : onBuyTicket,
+                  onPressed: viewModel.isBusy ? null : onBuyTicket,
                   child: const Text('Buy single ticket'),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton(
-                  onPressed: bookingState.isBusy ? null : onBuyPass,
+                  onPressed: viewModel.isBusy ? null : onBuyPass,
                   child: const Text('Choose a pass'),
                 ),
               ] else ...[
                 FilledButton(
-                  onPressed: bookingState.isBusy ? null : onConfirm,
+                  onPressed: viewModel.isBusy ? null : onConfirm,
                   child: Text(
-                    bookingState.isConfirming
-                        ? 'Finishing reservation...'
-                        : 'Finish reservation',
+                    viewModel.isBusy ? 'Finishing reservation...' : 'Finish reservation',
                   ),
                 ),
                 if (viewModel.hasActivePass) ...[
                   const SizedBox(height: 10),
                   OutlinedButton(
-                    onPressed: bookingState.isBusy ? null : onBuyPass,
+                    onPressed: viewModel.isBusy ? null : onBuyPass,
                     child: const Text('Change pass'),
                   ),
                 ],
@@ -224,7 +221,7 @@ class BookingContent extends StatelessWidget {
             ],
           ),
         ),
-        if (bookingState.actionError != null) ...[
+        if (viewModel.actionError != null) ...[
           const SizedBox(height: 18),
           Container(
             padding: const EdgeInsets.all(14),
@@ -242,7 +239,7 @@ class BookingContent extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    bookingState.actionError!,
+                    viewModel.actionError!,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: const Color(0xFFA34820),
                     ),

@@ -19,7 +19,6 @@ class PurchaseTicketContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bookingState = viewModel.state;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
@@ -115,10 +114,10 @@ class PurchaseTicketContent extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (bookingState.actionError != null) ...[
+                  if (viewModel.actionError != null) ...[
                     const SizedBox(height: 16),
                     Text(
-                      bookingState.actionError!,
+                      viewModel.actionError!,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: const Color(0xFFD05C2A),
                       ),
@@ -130,14 +129,14 @@ class PurchaseTicketContent extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           FilledButton(
-            onPressed: bookingState.isBusy ? null : onPay,
+            onPressed: viewModel.isBusy ? null : onPay,
             child: Text(
-              bookingState.isPurchasingTicket ? 'Processing...' : 'Pay \$2.00',
+              viewModel.isBusy ? 'Processing...' : 'Pay \$2.00',
             ),
           ),
           const SizedBox(height: 10),
           OutlinedButton(
-            onPressed: bookingState.isBusy ? null : onCancel,
+            onPressed: viewModel.isBusy ? null : onCancel,
             child: const Text('Back'),
           ),
         ],

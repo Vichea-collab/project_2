@@ -12,13 +12,11 @@ class RideAppViewModel extends ChangeNotifier {
   final RideRepository _repository;
   RideAppState _state = const RideAppState();
 
-  RideRepository get repository => _repository;
   RideAppState get state => _state;
 
   Future<void> initialize() async {
     try {
       _setState(_state.copyWith(isLoading: true, errorMessage: null));
-      notifyListeners();
 
       final loadedPassTypes = await _repository.fetchPassTypes();
       final loadedStations = await _repository.fetchStations();
@@ -39,7 +37,6 @@ class RideAppViewModel extends ChangeNotifier {
           isLoading: false,
         ),
       );
-      notifyListeners();
     } catch (_) {
       _setState(
         _state.copyWith(
@@ -47,13 +44,11 @@ class RideAppViewModel extends ChangeNotifier {
           isLoading: false,
         ),
       );
-      notifyListeners();
     }
   }
 
   void changeTab(int index) {
     _setState(_state.copyWith(currentTabIndex: index));
-    notifyListeners();
   }
 
   void selectStation(String stationId) {
@@ -74,12 +69,10 @@ class RideAppViewModel extends ChangeNotifier {
         selectedStation: selectedStation,
       ),
     );
-    notifyListeners();
   }
 
   void clearSelectedStation() {
     _setState(_state.copyWith(selectedStation: null));
-    notifyListeners();
   }
 
   void replaceCurrentUser(AppUser? user, {String? errorMessage}) {
@@ -89,12 +82,30 @@ class RideAppViewModel extends ChangeNotifier {
         errorMessage: errorMessage,
       ),
     );
-    notifyListeners();
   }
 
   void setErrorMessage(String? errorMessage) {
     _setState(_state.copyWith(errorMessage: errorMessage));
-    notifyListeners();
+  }
+
+  Future<void> saveUser(AppUser user) async {
+    await _repository.saveCurrentUser(user);
+    replaceCurrentUser(user, errorMessage: null);
+  }
+
+  Future<void> bookBike({
+    required String stationId,
+    required String slotId,
+    required AppUser updatedUser,
+  }) async {
+    await _repository.bookBike(stationId: stationId, slotId: slotId);
+    await _repository.saveCurrentUser(updatedUser);
+    final refreshedStations = await _repository.fetchStations();
+    applyStations(refreshedStations, updatedUser: updatedUser);
+  }
+
+  Future<List<BikeStation>> refreshStations() async {
+    return _repository.fetchStations();
   }
 
   void applyStations(
@@ -110,7 +121,6 @@ class RideAppViewModel extends ChangeNotifier {
         isLoading: false,
       ),
     );
-    notifyListeners();
   }
 
   BikeStation? resolveSelectedStation(List<BikeStation> updatedStations) {
@@ -130,5 +140,6 @@ class RideAppViewModel extends ChangeNotifier {
 
   void _setState(RideAppState nextState) {
     _state = nextState;
+    notifyListeners();
   }
 }
