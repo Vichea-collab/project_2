@@ -20,14 +20,6 @@ class BikeSlotDto {
     );
   }
 
-  factory BikeSlotDto.fromDomain(BikeSlot slot) {
-    return BikeSlotDto(
-      id: slot.id,
-      label: slot.label,
-      isAvailable: slot.isAvailable,
-    );
-  }
-
   BikeSlot toDomain() {
     return BikeSlot(id: id, label: label, isAvailable: isAvailable);
   }

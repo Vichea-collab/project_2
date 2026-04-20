@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../models/bike_slot.dart';
+import '../../../widgets/custom_button.dart';
 
 class BikeSlotTile extends StatelessWidget {
   const BikeSlotTile({super.key, required this.slot, required this.onTap});
@@ -91,16 +92,14 @@ class BikeSlotTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            FilledButton(
+            PrimaryButton(
               onPressed: onTap,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(92, 44),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                backgroundColor: slot.isAvailable
-                    ? const Color(0xFFFF7E3F)
-                    : const Color(0xFFCFC8C1),
-              ),
-              child: Text(slot.isAvailable ? 'Book now' : 'Unavailable'),
+              minimumSize: const Size(92, 44),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              backgroundColor: slot.isAvailable
+                  ? const Color(0xFFFF7E3F)
+                  : const Color(0xFFCFC8C1),
+              text: slot.isAvailable ? 'Book now' : 'Unavailable',
             ),
           ],
         ),

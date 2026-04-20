@@ -30,17 +30,9 @@ class StationsViewModel extends ChangeNotifier {
 
   BikeStation? get selectedStation {
     final selected = _appViewModel.state.selectedStation;
-    if (selected == null) {
-      return null;
-    }
-
-    for (final station in filteredStations) {
-      if (station.id == selected.id) {
-        return station;
-      }
-    }
-
-    return null;
+    if (selected == null) return null;
+    final match = filteredStations.where((s) => s.id == selected.id);
+    return match.isEmpty ? null : match.first;
   }
 
   String get searchQuery => _searchQuery;

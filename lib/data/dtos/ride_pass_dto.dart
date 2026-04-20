@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../../models/pass_type.dart';
 import '../../models/ride_pass.dart';
 
@@ -13,14 +11,6 @@ class RidePassDto {
     return RidePassDto(
       typeName: pass.type.name,
       purchasedAtIso: pass.purchasedAt.toIso8601String(),
-    );
-  }
-
-  factory RidePassDto.fromJsonString(String source) {
-    final json = jsonDecode(source) as Map<String, dynamic>;
-    return RidePassDto(
-      typeName: (json['typeName'] ?? '').toString(),
-      purchasedAtIso: (json['purchasedAtIso'] ?? '').toString(),
     );
   }
 
@@ -39,10 +29,6 @@ class RidePassDto {
       ),
       purchasedAt: DateTime.parse(purchasedAtIso),
     );
-  }
-
-  String toJsonString() {
-    return jsonEncode({'typeName': typeName, 'purchasedAtIso': purchasedAtIso});
   }
 
   Map<String, dynamic> toMap() {

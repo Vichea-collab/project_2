@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/custom_button.dart';
 import '../../../widgets/section_card.dart';
 import 'booking_flow_shared.dart';
 import '../view_model/booking_view_model.dart';
@@ -95,14 +96,14 @@ class BookingSuccessContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 22),
-              FilledButton(
+              PrimaryButton(
                 onPressed: onOpenHistory,
-                child: const Text('View history'),
+                text: 'View history',
               ),
               const SizedBox(height: 10),
-              OutlinedButton(
+              SecondaryButton(
                 onPressed: onOpenStations,
-                child: const Text('Go to stations'),
+                text: 'Go to stations',
               ),
             ],
           ),

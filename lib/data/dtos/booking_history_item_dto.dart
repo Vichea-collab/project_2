@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import '../../models/booking_history_item.dart';
 
 class BookingHistoryItemDto {
@@ -21,15 +19,6 @@ class BookingHistoryItemDto {
     );
   }
 
-  factory BookingHistoryItemDto.fromJsonString(String source) {
-    final json = jsonDecode(source) as Map<String, dynamic>;
-    return BookingHistoryItemDto(
-      stationName: (json['stationName'] ?? '').toString(),
-      slotLabel: (json['slotLabel'] ?? '').toString(),
-      bookedAtIso: (json['bookedAtIso'] ?? '').toString(),
-    );
-  }
-
   factory BookingHistoryItemDto.fromMap(Map<Object?, Object?> source) {
     return BookingHistoryItemDto(
       stationName: (source['stationName'] ?? '').toString(),
@@ -44,14 +33,6 @@ class BookingHistoryItemDto {
       slotLabel: slotLabel,
       bookedAt: DateTime.parse(bookedAtIso),
     );
-  }
-
-  String toJsonString() {
-    return jsonEncode({
-      'stationName': stationName,
-      'slotLabel': slotLabel,
-      'bookedAtIso': bookedAtIso,
-    });
   }
 
   Map<String, dynamic> toMap() {

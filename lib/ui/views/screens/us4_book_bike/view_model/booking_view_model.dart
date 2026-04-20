@@ -74,7 +74,7 @@ class BookingViewModel extends ChangeNotifier {
     } catch (_) {
       const message = 'Unable to continue this booking.';
       _appViewModel.setErrorMessage(message);
-      _setState(const AsyncValue.error('Unable to continue this booking.'));
+      _setState(AsyncValue.error(message));
       return false;
     }
   }
@@ -101,7 +101,7 @@ class BookingViewModel extends ChangeNotifier {
     } catch (_) {
       const message = 'Unable to confirm the booking.';
       _appViewModel.setErrorMessage(message);
-      _setState(const AsyncValue.error('Unable to confirm the booking.'));
+      _setState(AsyncValue.error(message));
       return false;
     }
   }

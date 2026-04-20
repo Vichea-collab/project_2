@@ -10,6 +10,7 @@ import 'us2_view_stations/stations_screen.dart';
 import 'us3_view_bikes/bikes_screen.dart';
 import 'us4_book_bike/booking_screen.dart';
 import 'us5_history/history_screen.dart';
+import '../widgets/custom_button.dart';
 
 class AppShellScreen extends StatelessWidget {
   const AppShellScreen({super.key});
@@ -37,9 +38,9 @@ class AppShellScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 16),
-                FilledButton(
+                PrimaryButton(
                   onPressed: viewModel.initialize,
-                  child: const Text('Retry'),
+                  text: 'Retry',
                 ),
               ],
             ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/custom_badge.dart';
+import '../../../widgets/custom_button.dart';
 import '../../../widgets/section_card.dart';
 import '../view_model/pass_selection_view_model.dart';
 import 'pass_option_card.dart';
@@ -25,18 +27,12 @@ class PassSelectionContent extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
       children: [
         if (viewModel.selectionMode) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF2ECE5),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Text(
-              'Step 2',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: const Color(0xFF5B534D),
-                fontWeight: FontWeight.w800,
-              ),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: CustomBadge(
+              text: 'Step 2',
+              backgroundColor: Color(0xFFF2ECE5),
+              textColor: Color(0xFF5B534D),
             ),
           ),
           const SizedBox(height: 14),
@@ -116,10 +112,10 @@ class PassSelectionContent extends StatelessWidget {
                 ),
                 if (!viewModel.selectionMode) ...[
                   const SizedBox(height: 14),
-                  OutlinedButton.icon(
+                  SecondaryButton(
                     onPressed: onCancelPass,
-                    icon: const Icon(Icons.close_rounded),
-                    label: const Text('Cancel subscription'),
+                    icon: Icons.close_rounded,
+                    text: 'Cancel subscription',
                   ),
                 ],
               ],

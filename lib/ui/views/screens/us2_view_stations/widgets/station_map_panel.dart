@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../../../models/bike_station.dart';
+import '../../../widgets/custom_badge.dart';
 
 class StationMapPanel extends StatefulWidget {
   const StationMapPanel({
@@ -193,8 +194,6 @@ class _StationMapPanelState extends State<StationMapPanel> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      _MapControlButton(icon: Icons.tune_rounded, onTap: () {}),
                     ],
                   ),
                 ),
@@ -265,13 +264,13 @@ class _StationMapPanelState extends State<StationMapPanel> {
                                 const SizedBox(height: 12),
                                 Row(
                                   children: [
-                                    _StatBadge(
-                                      label:
+                                    CustomBadge(
+                                      text:
                                           '${selectedStation.availableBikes} bikes ready',
                                     ),
                                     const SizedBox(width: 8),
-                                    _StatBadge(
-                                      label:
+                                    CustomBadge(
+                                      text:
                                           '${selectedStation.totalSlots} total slots',
                                     ),
                                   ],
@@ -504,27 +503,3 @@ class _MapControlButton extends StatelessWidget {
   }
 }
 
-class _StatBadge extends StatelessWidget {
-  const _StatBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F2EC),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Color(0xFF635B55),
-          fontWeight: FontWeight.w700,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
-}

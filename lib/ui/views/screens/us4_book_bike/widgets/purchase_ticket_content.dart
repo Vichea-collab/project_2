@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/custom_button.dart';
 import '../../../widgets/section_card.dart';
 import 'booking_flow_shared.dart';
 import '../view_model/booking_view_model.dart';
@@ -128,16 +129,16 @@ class PurchaseTicketContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          FilledButton(
-            onPressed: viewModel.isBusy ? null : onPay,
-            child: Text(
-              viewModel.isBusy ? 'Processing...' : 'Pay \$2.00',
-            ),
+          PrimaryButton(
+            onPressed: onPay,
+            text: 'Pay \$2.00',
+            isLoading: viewModel.isBusy,
           ),
           const SizedBox(height: 10),
-          OutlinedButton(
-            onPressed: viewModel.isBusy ? null : onCancel,
-            child: const Text('Back'),
+          SecondaryButton(
+            onPressed: onCancel,
+            text: 'Back',
+            isLoading: viewModel.isBusy,
           ),
         ],
       ),

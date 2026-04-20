@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../../../../../models/app_user.dart';
 import '../../../../viewmodels/ride_app_view_model.dart';
 import '../../../../../models/pass_type.dart';
 import '../../../../../models/ride_pass.dart';
@@ -45,23 +44,10 @@ class PassSelectionViewModel extends ChangeNotifier {
         : '${activePass.type.title} is active until ${formatDateLong(activePass.expirationDate)}.';
   }
 
-  Future<bool> activatePass(PassType passType) {
+  Future<bool> activatePass(PassType passType) async {
     final currentUser = _appViewModel.state.currentUser;
-    if (currentUser == null) {
-      return Future<bool>.value(false);
-    }
-    return _activatePass(currentUser, passType);
-  }
+    if (currentUser == null) return false;
 
-  Future<bool> cancelActivePass() {
-    final currentUser = _appViewModel.state.currentUser;
-    if (currentUser == null) {
-      return Future<bool>.value(false);
-    }
-    return _cancelPass(currentUser);
-  }
-
-  Future<bool> _activatePass(AppUser currentUser, PassType passType) async {
     try {
       final nextPass = RidePass(type: passType, purchasedAt: DateTime.now());
       final updatedUser = currentUser.copyWith(
@@ -76,7 +62,10 @@ class PassSelectionViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> _cancelPass(AppUser currentUser) async {
+  Future<bool> cancelActivePass() async {
+    final currentUser = _appViewModel.state.currentUser;
+    if (currentUser == null) return false;
+
     try {
       final updatedUser = currentUser.copyWith(activePass: null);
       await _appViewModel.saveUser(updatedUser);

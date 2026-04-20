@@ -49,17 +49,6 @@ class BikeStationDto {
     );
   }
 
-  factory BikeStationDto.fromDomain(BikeStation station) {
-    return BikeStationDto(
-      id: station.id,
-      name: station.name,
-      address: station.address,
-      mapX: station.mapX,
-      mapY: station.mapY,
-      slots: station.slots.map(BikeSlotDto.fromDomain).toList(),
-    );
-  }
-
   BikeStation toDomain() {
     return BikeStation(
       id: id,

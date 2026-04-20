@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../models/pass_type.dart';
+import '../../../../utils/date_time_utils.dart';
+import '../../../widgets/custom_badge.dart';
+import '../../../widgets/custom_button.dart';
 import '../../../widgets/section_card.dart';
 
 class PassOptionCard extends StatelessWidget {
@@ -53,22 +56,10 @@ class PassOptionCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: isActive ? style.activeBadge : style.badgeBackground,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  isActive ? 'Active' : daysLabel,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: isActive ? Colors.white : style.badgeText,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              CustomBadge(
+                text: isActive ? 'Active' : daysLabel,
+                backgroundColor: isActive ? style.activeBadge : style.badgeBackground,
+                textColor: isActive ? Colors.white : style.badgeText,
               ),
             ],
           ),
@@ -114,15 +105,13 @@ class PassOptionCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: isActive
-                      ? const Color(0xFF2F2A27)
-                      : style.buttonColor,
-                  minimumSize: Size(compact ? 96 : 108, 46),
-                ),
+              PrimaryButton(
+                backgroundColor: isActive
+                    ? const Color(0xFF2F2A27)
+                    : style.buttonColor,
+                minimumSize: Size(compact ? 96 : 108, 46),
                 onPressed: onPressed,
-                child: Text(isActive ? 'Replace' : 'Select'),
+                text: isActive ? 'Replace' : 'Select',
               ),
             ],
           ),
@@ -145,22 +134,7 @@ String benefitLabelFor(PassType type) {
 
 String expirationLabelFor(PassType type) {
   final expirationDate = DateTime.now().add(Duration(days: type.validityDays));
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
-  return '${months[expirationDate.month - 1]} ${expirationDate.day}, ${expirationDate.year}';
+  return formatDateLong(expirationDate);
 }
 
 PassCardStyle passCardStyleFor(PassType type) {

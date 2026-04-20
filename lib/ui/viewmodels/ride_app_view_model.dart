@@ -52,23 +52,9 @@ class RideAppViewModel extends ChangeNotifier {
   }
 
   void selectStation(String stationId) {
-    BikeStation? selectedStation;
-    for (final station in _state.stations) {
-      if (station.id == stationId) {
-        selectedStation = station;
-        break;
-      }
-    }
-
-    if (selectedStation == null) {
-      return;
-    }
-
-    _setState(
-      _state.copyWith(
-        selectedStation: selectedStation,
-      ),
-    );
+    final match = _state.stations.where((s) => s.id == stationId);
+    if (match.isEmpty) return;
+    _setState(_state.copyWith(selectedStation: match.first));
   }
 
   void clearSelectedStation() {
@@ -104,15 +90,12 @@ class RideAppViewModel extends ChangeNotifier {
     applyStations(refreshedStations, updatedUser: updatedUser);
   }
 
-  Future<List<BikeStation>> refreshStations() async {
-    return _repository.fetchStations();
-  }
 
   void applyStations(
     List<BikeStation> updatedStations, {
     AppUser? updatedUser,
   }) {
-    final nextSelectedStation = resolveSelectedStation(updatedStations);
+    final nextSelectedStation = _resolveSelectedStation(updatedStations);
     _setState(
       _state.copyWith(
         stations: updatedStations,
@@ -123,18 +106,12 @@ class RideAppViewModel extends ChangeNotifier {
     );
   }
 
-  BikeStation? resolveSelectedStation(List<BikeStation> updatedStations) {
+  BikeStation? _resolveSelectedStation(List<BikeStation> updatedStations) {
     final selectedStationId = _state.selectedStation?.id;
-    if (selectedStationId == null) {
-      return null;
-    }
+    if (selectedStationId == null) return null;
 
-    for (final station in updatedStations) {
-      if (station.id == selectedStationId) {
-        return station;
-      }
-    }
-
+    final match = updatedStations.where((s) => s.id == selectedStationId);
+    if (match.isNotEmpty) return match.first;
     return updatedStations.isEmpty ? null : updatedStations.first;
   }
 

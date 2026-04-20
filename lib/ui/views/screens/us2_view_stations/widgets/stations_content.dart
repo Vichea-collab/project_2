@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../models/bike_station.dart';
+import '../../../widgets/custom_badge.dart';
+import '../../../widgets/custom_button.dart';
 import '../view_model/stations_view_model.dart';
 import 'station_map_panel.dart';
 
@@ -161,12 +163,11 @@ class StationsContent extends StatelessWidget {
                             spacing: 8,
                             runSpacing: 8,
                             children: [
-                              _StationBadge(
-                                label: '${station.availableBikes} bikes ready',
+                              CustomBadge(
+                                text: '${station.availableBikes} bikes ready',
                               ),
-                              _StationBadge(
-                                label:
-                                    '${station.totalSlots} total slots',
+                              CustomBadge(
+                                text: '${station.totalSlots} total slots',
                               ),
                             ],
                           ),
@@ -176,9 +177,9 @@ class StationsContent extends StatelessWidget {
                             style: theme.textTheme.bodyMedium,
                           ),
                           const SizedBox(height: 14),
-                          FilledButton(
+                          PrimaryButton(
                             onPressed: () => onOpenBikes(station),
-                            child: const Text('View bikes'),
+                            text: 'View bikes',
                           ),
                         ],
                       ),
@@ -193,26 +194,3 @@ class StationsContent extends StatelessWidget {
   }
 }
 
-class _StationBadge extends StatelessWidget {
-  const _StationBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F2EC),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: const Color(0xFF645C55),
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-    );
-  }
-}
