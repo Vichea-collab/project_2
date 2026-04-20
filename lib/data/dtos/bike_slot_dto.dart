@@ -15,8 +15,8 @@ class BikeSlotDto {
   factory BikeSlotDto.fromMap(String id, Map<Object?, Object?> map) {
     return BikeSlotDto(
       id: id,
-      label: (map[RideApiSchema.slotLabel] ?? id).toString(),
-      isAvailable: map[RideApiSchema.slotIsAvailable] == true,
+      label: (map[apiSlotLabel] ?? id).toString(),
+      isAvailable: map[apiSlotIsAvailable] == true,
     );
   }
 
@@ -26,9 +26,9 @@ class BikeSlotDto {
 
   Map<String, Object?> toMap() {
     return {
-      RideApiSchema.slotId: id,
-      RideApiSchema.slotLabel: label,
-      RideApiSchema.slotIsAvailable: isAvailable,
+      apiSlotId: id,
+      apiSlotLabel: label,
+      apiSlotIsAvailable: isAvailable,
     };
   }
 }

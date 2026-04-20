@@ -1,21 +1,17 @@
-class RideApiSchema {
-  RideApiSchema._();
+const apiPathStations = 'stations';
+const apiPathUsers = 'users';
 
-  static const stations = 'stations';
-  static const users = 'users';
+const apiStationName = 'name';
+const apiStationAddress = 'address';
+const apiStationMapX = 'mapX';
+const apiStationMapY = 'mapY';
+const apiStationSlots = 'slots';
 
-  static const stationName = 'name';
-  static const stationAddress = 'address';
-  static const stationMapX = 'mapX';
-  static const stationMapY = 'mapY';
-  static const stationSlots = 'slots';
+const apiSlotId = 'id';
+const apiSlotLabel = 'label';
+const apiSlotIsAvailable = 'isAvailable';
 
-  static const slotId = 'id';
-  static const slotLabel = 'label';
-  static const slotIsAvailable = 'isAvailable';
-
-  static const userName = 'name';
-  static const userActivePass = 'activePass';
-  static const userHasSingleTicket = 'hasSingleTicket';
-  static const userBookingHistory = 'bookingHistory';
-}
+const apiUserName = 'name';
+const apiUserActivePass = 'activePass';
+const apiUserHasSingleTicket = 'hasSingleTicket';
+const apiUserBookingHistory = 'bookingHistory';

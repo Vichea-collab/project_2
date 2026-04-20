@@ -75,11 +75,6 @@ class AppShellScreen extends StatelessWidget {
                             header.title,
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            header.subtitle,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
                         ],
                       ),
                     ),

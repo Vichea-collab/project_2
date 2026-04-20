@@ -2,19 +2,19 @@ enum PassType {
   day(
     title: 'Day Pass',
     subtitle: 'Unlimited rentals for one day',
-    priceLabel: '\$3.90',
+    priceLabel: '\$3',
     validityDays: 1,
   ),
   monthly(
     title: 'Monthly Pass',
     subtitle: 'Best for daily commuting',
-    priceLabel: '\$24.90',
+    priceLabel: '\$20',
     validityDays: 30,
   ),
   annual(
     title: 'Annual Pass',
     subtitle: 'Long-term access with lower cost',
-    priceLabel: '\$169.00',
+    priceLabel: '\$100',
     validityDays: 365,
   );
 

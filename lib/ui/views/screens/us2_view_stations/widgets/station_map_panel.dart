@@ -168,7 +168,7 @@ class _StationMapPanelState extends State<StationMapPanel> {
                             onChanged: widget.onSearchChanged,
                             textInputAction: TextInputAction.search,
                             decoration: InputDecoration(
-                              hintText: 'Search nearby stations',
+                              hintText: 'Search stations',
                               hintStyle: theme.textTheme.bodyMedium?.copyWith(
                                 color: const Color(0xFF8A817B),
                               ),

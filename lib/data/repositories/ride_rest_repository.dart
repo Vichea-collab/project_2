@@ -30,7 +30,7 @@ class RideRestRepository implements RideRepository {
 
   @override
   Future<List<BikeStation>> fetchStations() async {
-    final response = await _client.get(_uri(RideApiSchema.stations));
+    final response = await _client.get(_uri(apiPathStations));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Unable to fetch stations.');
@@ -61,7 +61,7 @@ class RideRestRepository implements RideRepository {
   @override
   Future<AppUser> fetchCurrentUser() async {
     final response = await _client.get(
-      _uri('${RideApiSchema.users}/$defaultUserId'),
+      _uri('$apiPathUsers/$defaultUserId'),
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -82,7 +82,7 @@ class RideRestRepository implements RideRepository {
   @override
   Future<void> saveCurrentUser(AppUser user) async {
     final response = await _client.put(
-      _uri('${RideApiSchema.users}/${user.id}'),
+      _uri('$apiPathUsers/${user.id}'),
       headers: const {'content-type': 'application/json'},
       body: jsonEncode(AppUserDto.fromDomain(user).toMap()),
     );
@@ -98,7 +98,7 @@ class RideRestRepository implements RideRepository {
     required String slotId,
   }) async {
     final slotPath =
-        '${RideApiSchema.stations}/$stationId/${RideApiSchema.stationSlots}/$slotId';
+        '$apiPathStations/$stationId/$apiStationSlots/$slotId';
     final slotUri = _uri(slotPath);
 
     final getResponse = await _client.get(
@@ -118,13 +118,13 @@ class RideRestRepository implements RideRepository {
     }
 
     final currentSlot = Map<String, dynamic>.from(decoded);
-    if (currentSlot[RideApiSchema.slotIsAvailable] != true) {
+    if (currentSlot[apiSlotIsAvailable] != true) {
       throw Exception('Bike is no longer available.');
     }
 
     final updatedSlot = <String, dynamic>{
       ...currentSlot,
-      RideApiSchema.slotIsAvailable: false,
+      apiSlotIsAvailable: false,
     };
 
     final putResponse = await _client.put(
