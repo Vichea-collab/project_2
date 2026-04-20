@@ -64,29 +64,29 @@ class RideAppState {
 
   RideAppState copyWith({
     bool? isLoading,
-    Object? errorMessage = _sentinel,
+    Object? errorMessage = _unset,
     int? currentTabIndex,
     List<PassType>? passTypes,
     List<BikeStation>? stations,
-    Object? currentUser = _sentinel,
-    Object? selectedStation = _sentinel,
+    Object? currentUser = _unset,
+    Object? selectedStation = _unset,
   }) {
     return RideAppState(
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: identical(errorMessage, _sentinel)
+      errorMessage: identical(errorMessage, _unset)
           ? this.errorMessage
           : errorMessage as String?,
       currentTabIndex: currentTabIndex ?? this.currentTabIndex,
       passTypes: passTypes ?? this.passTypes,
       stations: stations ?? this.stations,
-      currentUser: identical(currentUser, _sentinel)
+      currentUser: identical(currentUser, _unset)
           ? this.currentUser
           : currentUser as AppUser?,
-      selectedStation: identical(selectedStation, _sentinel)
+      selectedStation: identical(selectedStation, _unset)
           ? this.selectedStation
           : selectedStation as BikeStation?,
     );
   }
 }
 
-const _sentinel = Object();
+const _unset = Object();
