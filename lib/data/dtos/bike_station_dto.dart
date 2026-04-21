@@ -1,5 +1,4 @@
 import '../../models/bike_station.dart';
-import '../api/ride_api_schema.dart';
 import 'bike_slot_dto.dart';
 
 class BikeStationDto {
@@ -20,7 +19,7 @@ class BikeStationDto {
   final List<BikeSlotDto> slots;
 
   factory BikeStationDto.fromMap(String id, Map<Object?, Object?> map) {
-    final rawSlots = map[apiStationSlots];
+    final rawSlots = map['slots'];
     final slots = <BikeSlotDto>[];
 
     if (rawSlots is Map) {
@@ -41,10 +40,10 @@ class BikeStationDto {
 
     return BikeStationDto(
       id: id,
-      name: (map[apiStationName] ?? '').toString(),
-      address: (map[apiStationAddress] ?? '').toString(),
-      mapX: toDoubleValue(map[apiStationMapX]),
-      mapY: toDoubleValue(map[apiStationMapY]),
+      name: (map['name'] ?? '').toString(),
+      address: (map['address'] ?? '').toString(),
+      mapX: toDoubleValue(map['mapX']),
+      mapY: toDoubleValue(map['mapY']),
       slots: slots,
     );
   }
@@ -63,13 +62,11 @@ class BikeStationDto {
   Map<String, Object?> toMap() {
     return {
       'id': id,
-      apiStationName: name,
-      apiStationAddress: address,
-      apiStationMapX: mapX,
-      apiStationMapY: mapY,
-      apiStationSlots: {
-        for (final slot in slots) slot.id: slot.toMap(),
-      },
+      'name': name,
+      'address': address,
+      'mapX': mapX,
+      'mapY': mapY,
+      'slots': {for (final slot in slots) slot.id: slot.toMap()},
     };
   }
 }

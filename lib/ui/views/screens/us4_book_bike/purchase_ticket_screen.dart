@@ -31,24 +31,7 @@ class PurchaseTicketScreen extends StatelessWidget {
   }
 
   Future<void> _payTicket(BuildContext context) async {
-    final purchased = await viewModel.purchaseSingleTicket();
-
-    if (!context.mounted) {
-      return;
-    }
-
-    if (!purchased) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            viewModel.actionError ?? 'Unable to continue this booking.',
-          ),
-        ),
-      );
-      return;
-    }
-
-    final booked = await viewModel.confirmBooking();
+    final booked = await viewModel.paySingleTicketAndConfirmBooking();
 
     if (!context.mounted) {
       return;

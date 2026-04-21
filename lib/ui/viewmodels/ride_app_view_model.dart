@@ -1,31 +1,45 @@
 import 'package:flutter/foundation.dart';
 
-import '../../data/repositories/ride_repository.dart';
+import '../../data/repositories/bike/bike_repository.dart';
+import '../../data/repositories/pass/pass_repository.dart';
+import '../../data/repositories/station/station_repository.dart';
+import '../../data/repositories/user/user_repository.dart';
 import '../../models/app_user.dart';
 import '../../models/bike_station.dart';
 import '../state/ride_app_state.dart';
+import '../utils/async_value.dart';
 
 class RideAppViewModel extends ChangeNotifier {
-  RideAppViewModel({required RideRepository repository})
-    : _repository = repository;
+  RideAppViewModel({
+    required BikeRepository bikeRepository,
+    required PassRepository passRepository,
+    required StationRepository stationRepository,
+    required UserRepository userRepository,
+  }) : _bikeRepository = bikeRepository,
+       _passRepository = passRepository,
+       _stationRepository = stationRepository,
+       _userRepository = userRepository;
 
-  final RideRepository _repository;
+  final BikeRepository _bikeRepository;
+  final PassRepository _passRepository;
+  final StationRepository _stationRepository;
+  final UserRepository _userRepository;
   RideAppState _state = const RideAppState();
 
   RideAppState get state => _state;
 
   Future<void> initialize() async {
     try {
-      _setState(_state.copyWith(isLoading: true, errorMessage: null));
+      _setState(_state.copyWith(status: const AsyncValue.loading()));
 
-      final loadedPassTypes = await _repository.fetchPassTypes();
-      final loadedStations = await _repository.fetchStations();
-      var currentUser = await _repository.fetchCurrentUser();
+      final loadedPassTypes = await _passRepository.fetchPassTypes();
+      final loadedStations = await _stationRepository.fetchStations();
+      var currentUser = await _userRepository.fetchCurrentUser();
 
       if (currentUser.activePass != null &&
           !currentUser.activePass!.expirationDate.isAfter(DateTime.now())) {
         currentUser = currentUser.copyWith(activePass: null);
-        await _repository.saveCurrentUser(currentUser);
+        await _userRepository.saveCurrentUser(currentUser);
       }
 
       _setState(
@@ -34,14 +48,13 @@ class RideAppViewModel extends ChangeNotifier {
           stations: loadedStations,
           currentUser: currentUser,
           selectedStation: null,
-          isLoading: false,
+          status: const AsyncValue.success(null),
         ),
       );
     } catch (_) {
       _setState(
         _state.copyWith(
-          errorMessage: 'Unable to load ride data.',
-          isLoading: false,
+          status: const AsyncValue.error('Unable to load ride data.'),
         ),
       );
     }
@@ -61,22 +74,23 @@ class RideAppViewModel extends ChangeNotifier {
     _setState(_state.copyWith(selectedStation: null));
   }
 
-  void replaceCurrentUser(AppUser? user, {String? errorMessage}) {
+  void replaceCurrentUser(AppUser? user, {AsyncValue<void>? status}) {
+    _setState(_state.copyWith(currentUser: user, status: status));
+  }
+
+  void setErrorMessage(String? errorMessage) {
     _setState(
       _state.copyWith(
-        currentUser: user,
-        errorMessage: errorMessage,
+        status: errorMessage == null
+            ? const AsyncValue.success(null)
+            : AsyncValue.error(errorMessage),
       ),
     );
   }
 
-  void setErrorMessage(String? errorMessage) {
-    _setState(_state.copyWith(errorMessage: errorMessage));
-  }
-
   Future<void> saveUser(AppUser user) async {
-    await _repository.saveCurrentUser(user);
-    replaceCurrentUser(user, errorMessage: null);
+    await _userRepository.saveCurrentUser(user);
+    replaceCurrentUser(user, status: const AsyncValue.success(null));
   }
 
   Future<void> bookBike({
@@ -84,12 +98,11 @@ class RideAppViewModel extends ChangeNotifier {
     required String slotId,
     required AppUser updatedUser,
   }) async {
-    await _repository.bookBike(stationId: stationId, slotId: slotId);
-    await _repository.saveCurrentUser(updatedUser);
-    final refreshedStations = await _repository.fetchStations();
+    await _bikeRepository.bookBike(stationId: stationId, slotId: slotId);
+    await _userRepository.saveCurrentUser(updatedUser);
+    final refreshedStations = await _stationRepository.fetchStations();
     applyStations(refreshedStations, updatedUser: updatedUser);
   }
-
 
   void applyStations(
     List<BikeStation> updatedStations, {
@@ -101,7 +114,7 @@ class RideAppViewModel extends ChangeNotifier {
         stations: updatedStations,
         currentUser: updatedUser ?? _state.currentUser,
         selectedStation: nextSelectedStation,
-        isLoading: false,
+        status: const AsyncValue.success(null),
       ),
     );
   }

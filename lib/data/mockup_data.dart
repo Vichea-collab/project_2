@@ -1,65 +1,14 @@
-import '../../models/app_user.dart';
-import '../../models/bike_slot.dart';
-import '../../models/bike_station.dart';
-import '../../models/pass_type.dart';
-import 'ride_repository.dart';
+import '../models/app_user.dart';
+import '../models/bike_slot.dart';
+import '../models/bike_station.dart';
 
-class MockRideRepository implements RideRepository {
-  MockRideRepository() {
-    _stations = _seedStations();
-  }
+class MockRideStore {
+  MockRideStore() : stations = _seedStations();
 
-  late List<BikeStation> _stations;
-  AppUser _currentUser = const AppUser(id: 'u-001', name: 'Sok Dara');
+  List<BikeStation> stations;
+  AppUser currentUser = const AppUser(id: 'u-001', name: 'Sok Dara');
 
-  @override
-  Future<List<PassType>> fetchPassTypes() async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    return PassType.values;
-  }
-
-  @override
-  Future<List<BikeStation>> fetchStations() async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    return List<BikeStation>.from(_stations);
-  }
-
-  @override
-  Future<AppUser> fetchCurrentUser() async {
-    await Future<void>.delayed(const Duration(milliseconds: 150));
-    return _currentUser;
-  }
-
-  @override
-  Future<void> saveCurrentUser(AppUser user) async {
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    _currentUser = user;
-  }
-
-  @override
-  Future<void> bookBike({
-    required String stationId,
-    required String slotId,
-  }) async {
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-
-    _stations = _stations.map((station) {
-      if (station.id != stationId) {
-        return station;
-      }
-
-      final slots = station.slots
-          .map(
-            (slot) =>
-                slot.id == slotId ? slot.copyWith(isAvailable: false) : slot,
-          )
-          .toList();
-
-      return station.copyWith(slots: slots);
-    }).toList();
-  }
-
-  List<BikeStation> _seedStations() {
+  static List<BikeStation> _seedStations() {
     return const [
       BikeStation(
         id: 'st-1',

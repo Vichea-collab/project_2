@@ -184,7 +184,7 @@ class BookingContent extends StatelessWidget {
                       child: Text(
                         viewModel.canConfirm
                             ? 'Access is active.'
-                            : 'Select a ticket or pass to continue.',
+                            : 'Pay for this ride or choose a pass to continue.',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: const Color(0xFF5D5650),
                         ),
@@ -197,7 +197,7 @@ class BookingContent extends StatelessWidget {
               if (!viewModel.canConfirm) ...[
                 PrimaryButton(
                   onPressed: onBuyTicket,
-                  text: 'Buy single ticket',
+                  text: 'Pay \$2.00 for this ride',
                   isLoading: viewModel.isBusy,
                 ),
                 const SizedBox(height: 10),
@@ -295,4 +295,3 @@ class _InfoPill extends StatelessWidget {
     );
   }
 }
-

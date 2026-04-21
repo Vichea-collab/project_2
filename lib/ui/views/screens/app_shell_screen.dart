@@ -9,7 +9,6 @@ import 'us1_select_pass/pass_selection_screen.dart';
 import 'us2_view_stations/stations_screen.dart';
 import 'us3_view_bikes/bikes_screen.dart';
 import 'us4_book_bike/booking_screen.dart';
-import 'us5_history/history_screen.dart';
 import '../widgets/custom_button.dart';
 
 class AppShellScreen extends StatelessWidget {
@@ -98,7 +97,6 @@ class AppShellScreen extends StatelessWidget {
                       onOpenBikes: (station) => _openBikes(context, station),
                     ),
                     const PassSelectionScreen(),
-                    const HistoryScreen(),
                   ],
                 ),
               ),
@@ -119,11 +117,6 @@ class AppShellScreen extends StatelessWidget {
             icon: Icon(Icons.confirmation_num_outlined),
             selectedIcon: Icon(Icons.confirmation_num_rounded),
             label: 'Passes',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history_rounded),
-            label: 'History',
           ),
         ],
       ),
@@ -168,11 +161,6 @@ AppShellHeader buildAppShellHeader(int index, RideAppState appState) {
       );
     case 1:
       return AppShellHeader(title: 'Passes', subtitle: appState.accessLabel);
-    case 2:
-      return AppShellHeader(
-        title: 'History',
-        subtitle: '${appState.bookingHistory.length} bookings saved',
-      );
     default:
       return const AppShellHeader(
         title: 'RideFlow',

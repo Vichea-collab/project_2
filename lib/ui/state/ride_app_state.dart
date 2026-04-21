@@ -1,13 +1,12 @@
 import '../../models/app_user.dart';
 import '../../models/bike_station.dart';
-import '../../models/booking_history_item.dart';
 import '../../models/pass_type.dart';
 import '../../models/ride_pass.dart';
+import '../utils/async_value.dart';
 
 class RideAppState {
   const RideAppState({
-    this.isLoading = true,
-    this.errorMessage,
+    this.status = const AsyncValue.loading(),
     this.currentTabIndex = 0,
     this.passTypes = const [],
     this.stations = const [],
@@ -15,20 +14,17 @@ class RideAppState {
     this.selectedStation,
   });
 
-  final bool isLoading;
-  final String? errorMessage;
+  final AsyncValue<void> status;
   final int currentTabIndex;
   final List<PassType> passTypes;
   final List<BikeStation> stations;
   final AppUser? currentUser;
   final BikeStation? selectedStation;
 
+  bool get isLoading => status.isLoading;
+  String? get errorMessage => status.errorMessage;
+
   RidePass? get activePass => currentUser?.activePass;
-
-  bool get hasSingleTicket => currentUser?.hasSingleTicket ?? false;
-
-  List<BookingHistoryItem> get bookingHistory =>
-      currentUser?.bookingHistory ?? const [];
 
   int get totalAvailableBikes =>
       stations.fold(0, (total, station) => total + station.availableBikes);
@@ -56,15 +52,11 @@ class RideAppState {
     if (hasActivePass) {
       return '${activePass!.type.title} active';
     }
-    if (hasSingleTicket) {
-      return 'Single ticket ready';
-    }
     return 'No active access';
   }
 
   RideAppState copyWith({
-    bool? isLoading,
-    Object? errorMessage = _unset,
+    AsyncValue<void>? status,
     int? currentTabIndex,
     List<PassType>? passTypes,
     List<BikeStation>? stations,
@@ -72,10 +64,7 @@ class RideAppState {
     Object? selectedStation = _unset,
   }) {
     return RideAppState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: identical(errorMessage, _unset)
-          ? this.errorMessage
-          : errorMessage as String?,
+      status: status ?? this.status,
       currentTabIndex: currentTabIndex ?? this.currentTabIndex,
       passTypes: passTypes ?? this.passTypes,
       stations: stations ?? this.stations,

@@ -9,12 +9,10 @@ class BookingSuccessContent extends StatelessWidget {
   const BookingSuccessContent({
     super.key,
     required this.viewModel,
-    required this.onOpenHistory,
     required this.onOpenStations,
   });
 
   final BookingViewModel viewModel;
-  final VoidCallback onOpenHistory;
   final VoidCallback onOpenStations;
 
   @override
@@ -96,15 +94,7 @@ class BookingSuccessContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 22),
-              PrimaryButton(
-                onPressed: onOpenHistory,
-                text: 'View history',
-              ),
-              const SizedBox(height: 10),
-              SecondaryButton(
-                onPressed: onOpenStations,
-                text: 'Go to stations',
-              ),
+              PrimaryButton(onPressed: onOpenStations, text: 'Go to stations'),
             ],
           ),
         ),

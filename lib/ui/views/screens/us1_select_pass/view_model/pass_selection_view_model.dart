@@ -19,7 +19,7 @@ class PassSelectionViewModel extends ChangeNotifier {
   List<PassType> get passTypes => _appViewModel.state.passTypes;
   PassType? get activePassType => _appViewModel.state.activePass?.type;
   bool get hasActivePass => _appViewModel.state.activePass != null;
-  String? get errorMessage => _appViewModel.state.errorMessage;
+  String? get errorMessage => _appViewModel.state.status.errorMessage;
   String? get activePassExpirationLabel {
     final activePass = _appViewModel.state.activePass;
     if (activePass == null) {
@@ -50,10 +50,7 @@ class PassSelectionViewModel extends ChangeNotifier {
 
     try {
       final nextPass = RidePass(type: passType, purchasedAt: DateTime.now());
-      final updatedUser = currentUser.copyWith(
-        activePass: nextPass,
-        hasSingleTicket: false,
-      );
+      final updatedUser = currentUser.copyWith(activePass: nextPass);
       await _appViewModel.saveUser(updatedUser);
       return true;
     } catch (_) {

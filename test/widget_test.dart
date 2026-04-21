@@ -1,11 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:project_2/data/repositories/mock_ride_repository.dart';
+import 'package:project_2/data/mockup_data.dart';
+import 'package:project_2/data/repositories/bike/bike_repository.dart';
+import 'package:project_2/data/repositories/pass/pass_repository.dart';
+import 'package:project_2/data/repositories/station/station_repository.dart';
+import 'package:project_2/data/repositories/user/user_repository.dart';
 import 'package:project_2/ui/viewmodels/ride_app_view_model.dart';
 
 void main() {
   test('initializes app state from the mock repository', () async {
-    final repository = MockRideRepository();
-    final viewModel = RideAppViewModel(repository: repository);
+    final store = MockRideStore();
+    final viewModel = RideAppViewModel(
+      bikeRepository: BikeMockRepository(store: store),
+      passRepository: const PassMockRepository(),
+      stationRepository: StationMockRepository(store: store),
+      userRepository: UserMockRepository(store: store),
+    );
 
     await viewModel.initialize();
 

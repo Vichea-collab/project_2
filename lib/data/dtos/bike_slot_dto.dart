@@ -1,5 +1,4 @@
 import '../../models/bike_slot.dart';
-import '../api/ride_api_schema.dart';
 
 class BikeSlotDto {
   const BikeSlotDto({
@@ -15,8 +14,8 @@ class BikeSlotDto {
   factory BikeSlotDto.fromMap(String id, Map<Object?, Object?> map) {
     return BikeSlotDto(
       id: id,
-      label: (map[apiSlotLabel] ?? id).toString(),
-      isAvailable: map[apiSlotIsAvailable] == true,
+      label: (map['label'] ?? id).toString(),
+      isAvailable: map['isAvailable'] == true,
     );
   }
 
@@ -25,10 +24,6 @@ class BikeSlotDto {
   }
 
   Map<String, Object?> toMap() {
-    return {
-      apiSlotId: id,
-      apiSlotLabel: label,
-      apiSlotIsAvailable: isAvailable,
-    };
+    return {'id': id, 'label': label, 'isAvailable': isAvailable};
   }
 }
