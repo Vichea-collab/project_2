@@ -1,0 +1,7 @@
+can i remove the ride app view model, and use only global state the ride app state
+
+i have the anync_utils in utils, u can import to use for all us that needed
+
+can u remove the app shell screen, for bottom navigation tab, u can create file navigation_tab.dart in ui/view/widgets and other u can implement for each us
+
+the view bike should show only the slot that have bike, if empty no need to show in the list and the totalslot change to the slotavailable
